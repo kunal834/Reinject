@@ -1,0 +1,18 @@
+node_modules/
+dist/
+build/
+.wrangler/
+.dev.vars
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# wrangler-generated types — regenerate on `pnpm install` via api/postinstall
+api/worker-configuration.d.ts
+
+# Note: web/src/routeTree.gen.ts IS committed so fresh-clone typecheck works.
+# The TanStack Router vite plugin regenerates it on dev/build.
