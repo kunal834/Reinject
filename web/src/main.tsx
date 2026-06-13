@@ -1,7 +1,9 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { routeTree } from './routeTree.gen'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routes/routeTree.gen'
+import { AppProvider } from './context/Appcontext' // Ensure lowercase 'c' matches your sidebar!
+import './index.css'
 
 const router = createRouter({ routeTree })
 
@@ -11,11 +13,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const rootEl = document.getElementById('root')
-if (!rootEl) throw new Error('root element missing')
-
-createRoot(rootEl).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    {/* 1. AppProvider MUST wrap the RouterProvider entirely */}
+    <AppProvider>
+      <RouterProvider router={router} />
+    </AppProvider>
+  </React.StrictMode>,
 )

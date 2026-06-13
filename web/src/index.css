@@ -1,0 +1,5 @@
+@import "tailwindcss";  
+@theme {
+  /* This automatically generates utility classes like bg-brand, text-brand, border-brand */
+  --color-brand: var(--survey-primary-color, #646cff); 
+}
