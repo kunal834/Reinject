@@ -11,8 +11,8 @@ app.use('/api/*', cors({
   origin: (origin) => {
     const allowedOrigins = [
       'http://localhost:5173',
-      'https://formflow-app.pages.dev',  // Old domain
-      'https://YOUR_NEW_NAME.pages.dev' // 👈 Add your brand-new project URL here!
+      'https://formflow-app.pages.dev', 
+      
     ]
     return allowedOrigins.includes(origin) ? origin : allowedOrigins[1]
   },
