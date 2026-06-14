@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './__root'
 import { Route as DashboardRouteImport } from './dashboard'
 import { Route as IndexRouteImport } from './index'
+import { Route as SurveyIdRouteImport } from './survey/$id'
 import { Route as AuthLoginRouteImport } from './auth/login'
 
 const DashboardRoute = DashboardRouteImport.update({
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SurveyIdRoute = SurveyIdRouteImport.update({
+  id: '/survey/$id',
+  path: '/survey/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
+  '/survey/$id': typeof SurveyIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
+  '/survey/$id': typeof SurveyIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
+  '/survey/$id': typeof SurveyIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/auth/login'
+  fullPaths: '/' | '/dashboard' | '/auth/login' | '/survey/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/auth/login'
-  id: '__root__' | '/' | '/dashboard' | '/auth/login'
+  to: '/' | '/dashboard' | '/auth/login' | '/survey/$id'
+  id: '__root__' | '/' | '/dashboard' | '/auth/login' | '/survey/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  SurveyIdRoute: typeof SurveyIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/survey/$id': {
+      id: '/survey/$id'
+      path: '/survey/$id'
+      fullPath: '/survey/$id'
+      preLoaderRoute: typeof SurveyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login': {
       id: '/auth/login'
       path: '/auth/login'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   AuthLoginRoute: AuthLoginRoute,
+  SurveyIdRoute: SurveyIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

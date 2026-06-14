@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../context/Appcontext'
+import { CLIENT_BG_MAP } from '../routes/dashboard'
 
 interface QuestionInput {
   id: string
@@ -12,318 +13,338 @@ interface SurveyBuilderProps {
   onCreateSuccess: () => void
 }
 
+const BG_STYLE_PRESETS = [
+  { id: 'dirt', name: '🟫 Ground Dirt', desc: 'Standard earthy brown structural look' },
+  { id: 'netherrack', name: '🟥 Crimson Netherrack', desc: 'Deep nether core high-contrast red' },
+  { id: 'endstone', name: '🟨 Void Endstone', desc: 'Eerie, custom light astral violet tone' },
+  { id: 'deepslate', name: '⬛ Cobbled Deepslate', desc: 'Industrial slate charcoal profile' },
+  { id: 'obsidian', name: '🟪 Dark Obsidian', desc: 'High strength stellar dark violet base' }
+]
+
 export function SurveyBuilder({ onCreateSuccess }: SurveyBuilderProps) {
   const { createSurvey } = useApp()
 
-  // Form Configuration Core Hooks
   const [surveyTitle, setSurveyTitle] = useState('')
-  const [primaryColor, setPrimaryColor] = useState('#6366f1')
+  const [primaryColor, setPrimaryColor] = useState('#5c8e32')
   const [logoUrl, setLogoUrl] = useState('')
+  
+  // New State additions for background options handling
+  const [bgType, setBgType] = useState<'preset' | 'custom'>('preset')
+  const [bgStyle, setBgStyle] = useState('dirt')
+  const [customBgColor, setCustomBgColor] = useState('#111827') // Default to deep gray
+  
   const [questions, setQuestions] = useState<QuestionInput[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [localLiveMock, setLocalLiveMock] = useState<any>(null)
 
-  // --- COMPOSER MUTATION LAYER ---
+  useEffect(() => {
+    setLocalLiveMock({
+      title: surveyTitle.trim() || 'Untitled Document Matrix',
+      primaryColor,
+      logoUrl,
+      bgType,
+      bgStyle,
+      customBgColor,
+      questions
+    })
+  }, [surveyTitle, primaryColor, logoUrl, bgType, bgStyle, customBgColor, questions])
+
   const addQuestion = (type: 'short_text' | 'multiple_choice' | 'rating') => {
     const defaultOptions = 
-      type === 'multiple_choice' ? ['Option 1', 'Option 2'] : 
+      type === 'multiple_choice' ? ['Option A', 'Option B'] : 
       type === 'rating' ? ['1', '2', '3', '4', '5'] : []
     
-    const newQuestion: QuestionInput = {
-      id: crypto.randomUUID(),
-      type,
-      label: '',
-      options: defaultOptions
-    }
-    setQuestions([...questions, newQuestion])
+    setQuestions([...questions, { id: crypto.randomUUID(), type, label: '', options: defaultOptions }])
   }
 
-  const removeQuestion = (id: string) => {
-    setQuestions(questions.filter(q => q.id !== id))
-  }
-
+  const removeQuestion = (id: string) => setQuestions(questions.filter(q => q.id !== id))
+  
   const updateQuestionLabel = (id: string, value: string) => {
     setQuestions(questions.map(q => q.id === id ? { ...q, label: value } : q))
   }
 
-  const addOption = (qId: string) => {
-    setQuestions(questions.map(q => {
-      if (q.id === qId) {
-        return { ...q, options: [...q.options, `Option ${q.options.length + 1}`] }
-      }
-      return q
-    }))
+  const moveQuestion = (currentIndex: number, direction: 'UP' | 'DOWN') => {
+    const targetIndex = direction === 'UP' ? currentIndex - 1 : currentIndex + 1
+    if (targetIndex < 0 || targetIndex >= questions.length) return
+
+    const reorderedQuestions = [...questions]
+    const [removedNode] = reorderedQuestions.splice(currentIndex, 1)
+    reorderedQuestions.splice(targetIndex, 0, removedNode)
+    setQuestions(reorderedQuestions)
   }
 
-  const updateOptionValue = (qId: string, optIndex: number, value: string) => {
+  const addOption = (qId: string) => {
+    setQuestions(questions.map(q => q.id === qId ? { ...q, options: [...q.options, `Option ${q.options.length + 1}`] } : q))
+  }
+
+  const updateOptionValue = (qId: string, optIdx: number, value: string) => {
     setQuestions(questions.map(q => {
       if (q.id === qId) {
         const updated = [...q.options]
-        updated[optIndex] = value
+        updated[optIdx] = value
         return { ...q, options: updated }
       }
       return q
     }))
   }
 
-  const removeOption = (qId: string, optIndex: number) => {
-    setQuestions(questions.map(q => {
-      if (q.id === qId) {
-        return { ...q, options: q.options.filter((_, idx) => idx !== optIndex) }
-      }
-      return q
-    }))
+  const removeOption = (qId: string, optIdx: number) => {
+    setQuestions(questions.map(q => q.id === qId ? { ...q, options: q.options.filter((_, idx) => idx !== optIdx) } : q))
   }
-
-  // --- NATIVE DRAG AND DROP REORDER MECHANISM ---
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
-
-  const handleDragStart = (index: number) => setDraggedIndex(index)
-  
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault()
-    if (draggedIndex === null || draggedIndex === index) return
-    
-    const reordered = [...questions]
-    const currentDraggedItem = reordered[draggedIndex]
-    reordered.splice(draggedIndex, 1)
-    reordered.splice(index, 0, currentDraggedItem)
-    
-    setDraggedIndex(index)
-    setQuestions(reordered)
-  }
-
-  const handleDragEnd = () => setDraggedIndex(null)
 
   const handleCreateSurveySubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!surveyTitle.trim()) return alert("A survey title is required.")
-    if (questions.length === 0) return alert("Please add at least one question block.")
+    if (questions.length === 0) return alert("Please add at least one question node.")
 
     setIsSubmitting(true)
     try {
       const payload = {
         title: surveyTitle.trim(),
-        branding: { primaryColor, logoUrl: logoUrl.trim() },
-        questions: questions.map(q => ({ type: q.type, label: q.label, options: q.options }))
+        // Bundled safely inside your branding string wrapper matrix
+        branding: JSON.stringify({ 
+          primaryColor, 
+          logoUrl: logoUrl.trim(), 
+          bgType,
+          bgStyle, 
+          customBgColor 
+        }),
+        questions: questions.map((q, idx) => ({
+          id: q.id,
+          type: q.type,
+          label: q.label.trim() || 'Untitled Query Parameter',
+          options: JSON.stringify(q.options),
+          sort_order: idx
+        }))
       }
       
       const res = await createSurvey(payload)
-      if (res.success) {
-        onCreateSuccess()
-      } else {
-        alert(res.error || "Failed to persist survey layout matrix.")
-      }
+      if (res.success) onCreateSuccess()
+      else alert(res.error || "Failed to commit record matrices.")
     } catch (err) {
-      alert("Network transmission error occurred.")
+      alert("Network exception error.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  // Get current active preview canvas color background
+  const getMockBgColor = () => {
+    if (bgType === 'custom') return customBgColor
+    return CLIENT_BG_MAP[bgStyle] || '#2c1b12'
+  }
+
   return (
-    <form onSubmit={handleCreateSurveySubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <form onSubmit={handleCreateSurveySubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start text-[#f0f0f0]">
       
-      {/* Left Column Canvas: Title Setup + Questions Flow Builder */}
+      {/* Left Column Fields Creator */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/20 p-6 space-y-4 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-slate-200">1. Core Schema Setup</h2>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Survey Display Title</label>
+        <div className="rounded-none border-4 border-b-8 border-black bg-black/20 p-6 space-y-4">
+          <h2 className="text-xl font-black uppercase text-[#ffff55] [text-shadow:1px_1px_0px_#000]">1. Matrix Properties</h2>
+          <div className="space-y-2">
+            <label className="block text-xs font-bold uppercase text-zinc-400">Display Meta Title</label>
             <input
               type="text"
               required
-              placeholder="e.g., Q3 Product Satisfaction Index"
+              placeholder="e.g., Ender Dragon Raid Feedback Form"
               value={surveyTitle}
               onChange={(e) => setSurveyTitle(e.target.value)}
-              className="block w-full rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-white placeholder-slate-600 text-md focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-none border-4 border-black bg-black/40 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ffaa00]"
             />
           </div>
         </div>
 
-        {/* Interactive Element Blocks Sequence View */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-200">2. Form Layout Sequence</h2>
-            <span className="text-xs text-slate-500 font-medium font-mono">Nodes configured: {questions.length}</span>
-          </div>
-
+          <h2 className="text-xl font-black uppercase text-[#ffff55] [text-shadow:1px_1px_0px_#000]">2. Structural Fields Flow</h2>
+          
           {questions.length === 0 ? (
-            <div className="rounded-2xl border-2 border-dashed border-slate-800 p-12 text-center text-slate-500">
-              Form layout matrix empty. Choose an element block type below to begin mounting interactive inputs.
+            <div className="border-4 border-dashed border-black bg-black/10 p-8 text-center text-zinc-500 font-bold uppercase text-xs">
+              Matrix stack empty. Choose a node component option below.
             </div>
           ) : (
             <div className="space-y-4">
-              {questions.map((q, index) => (
-                <div
-                  key={q.id}
-                  draggable
-                  onDragStart={() => handleDragStart(index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDragEnd={handleDragEnd}
-                  className={`group relative rounded-2xl border p-5 bg-slate-900/40 border-slate-800 transition shadow-inner cursor-grab active:cursor-grabbing ${
-                    draggedIndex === index ? 'opacity-40 border-indigo-500 bg-slate-950/80' : ''
-                  }`}
-                >
-                  <div className="absolute top-6 left-3 text-slate-600 group-hover:text-slate-400 transition select-none text-sm font-mono tracking-tighter">
-                    ::
-                  </div>
-
-                  <div className="pl-4 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center rounded-md bg-slate-950 border border-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                        Block {index + 1} • {q.type.replace('_', ' ')}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeQuestion(q.id)}
-                        className="text-xs font-semibold text-rose-500 hover:text-rose-400 transition cursor-pointer"
-                      >
-                        Remove Node
-                      </button>
+              {questions.map((q, idx) => (
+                <div key={q.id} className="border-4 border-b-8 border-black bg-[#242c30] p-4 space-y-4">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase">
+                    <span className="bg-black px-2 py-0.5 border border-zinc-800 text-[#55ffff]">Node Array Index: {idx}</span>
+                    
+                    <div className="flex gap-3 items-center">
+                      <button type="button" disabled={idx === 0} onClick={() => moveQuestion(idx, 'UP')} className="text-[#55ff55] disabled:opacity-20 hover:underline cursor-pointer">▲ Move Up</button>
+                      <button type="button" disabled={idx === questions.length - 1} onClick={() => moveQuestion(idx, 'DOWN')} className="text-[#55ff55] disabled:opacity-20 hover:underline cursor-pointer">▼ Move Down</button>
+                      <span className="text-zinc-600">|</span>
+                      <button type="button" onClick={() => removeQuestion(q.id)} className="text-[#ff5555] hover:underline cursor-pointer">[ Destroy ]</button>
                     </div>
-
-                    <div>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Type question prompt label here..."
-                        value={q.label}
-                        onChange={(e) => updateQuestionLabel(q.id, e.target.value)}
-                        className="block w-full rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
-                      />
-                    </div>
-
-                    {/* Choice Configuration Array Fields loop */}
-                    {q.type === 'multiple_choice' && (
-                      <div className="space-y-2 border-l border-slate-800 pl-3 pt-1">
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Option Configurations</label>
-                        {q.options.map((option, optIdx) => (
-                          <div key={optIdx} className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              required
-                              value={option}
-                              onChange={(e) => updateOptionValue(q.id, optIdx, e.target.value)}
-                              className="block w-full max-w-sm rounded-md border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 text-xs text-slate-300 focus:border-indigo-500 focus:outline-none"
-                            />
-                            {q.options.length > 2 && (
-                              <button
-                                type="button"
-                                onClick={() => removeOption(q.id, optIdx)}
-                                className="text-xs text-slate-600 hover:text-rose-400 transition p-1 cursor-pointer"
-                              >
-                                ✕
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() => addOption(q.id)}
-                          className="inline-flex items-center text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 pt-1 cursor-pointer"
-                        >
-                          ➕ Add Choice Option
-                        </button>
-                      </div>
-                    )}
                   </div>
+                  
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter explicit label query text string..."
+                    value={q.label}
+                    onChange={(e) => updateQuestionLabel(q.id, e.target.value)}
+                    className="w-full border-2 border-black bg-black/50 p-2.5 text-xs text-white focus:outline-none focus:border-white"
+                  />
+                  
+                  {q.type === 'multiple_choice' && (
+                    <div className="space-y-2 pl-4 bg-black/20 p-2.5 border border-black">
+                      {q.options.map((opt, oIdx) => (
+                        <div key={oIdx} className="flex gap-2 items-center">
+                          <input
+                            type="text"
+                            required
+                            value={opt}
+                            onChange={(e) => updateOptionValue(q.id, oIdx, e.target.value)}
+                            className="bg-black/60 border border-black p-1.5 text-xs text-zinc-300 font-mono w-64 focus:outline-none focus:border-indigo-400"
+                          />
+                          {q.options.length > 2 && (
+                            <button type="button" onClick={() => removeOption(q.id, oIdx)} className="text-xs text-[#ff5555] font-bold px-1 hover:text-red-400">✕</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => addOption(q.id)} className="text-[10px] font-bold text-[#55ff55] uppercase mt-1 block hover:underline">+ Append Vector Value</button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Insertion Elements Hub */}
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 space-y-3">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left">Add Layout Element Nodes</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button
-              type="button"
-              onClick={() => addQuestion('short_text')}
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 py-2.5 text-xs font-semibold text-slate-200 hover:border-indigo-500 hover:bg-indigo-500/5 transition cursor-pointer"
-            >
-              📝 Short Text Block
-            </button>
-            <button
-              type="button"
-              onClick={() => addQuestion('multiple_choice')}
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 py-2.5 text-xs font-semibold text-slate-200 hover:border-indigo-500 hover:bg-indigo-500/5 transition cursor-pointer"
-            >
-              🔘 Multiple Choice
-            </button>
-            <button
-              type="button"
-              onClick={() => addQuestion('rating')}
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-800/80 bg-slate-900/40 py-2.5 text-xs font-semibold text-slate-200 hover:border-indigo-500 hover:bg-indigo-500/5 transition cursor-pointer"
-            >
-              ⭐ Linear 1–5 Rating
-            </button>
-          </div>
+        <div className="border-4 border-black bg-[#1a110b] p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button" onClick={() => addQuestion('short_text')} className="bg-[#302c20] border-2 border-b-4 border-black p-2.5 text-xs font-bold text-[#ffff55] hover:bg-[#3f3a2a] cursor-pointer">📝 Short Text Node</button>
+          <button type="button" onClick={() => addQuestion('multiple_choice')} className="bg-[#242c30] border-2 border-b-4 border-black p-2.5 text-xs font-bold text-[#55ffff] hover:bg-[#2e383e] cursor-pointer">🔘 Choice Array Node</button>
+          <button type="button" onClick={() => addQuestion('rating')} className="bg-[#302020] border-2 border-b-4 border-black p-2.5 text-xs font-bold text-[#ff5555] hover:bg-[#3d2929] cursor-pointer">⭐ 1-5 Metric Node</button>
         </div>
       </div>
 
-      {/* Right Column Workspace Panel: Branding Controls Tokens + Form Dispatcher */}
+      {/* Right Sidebar Profiles Controls */}
       <div className="space-y-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/10 p-6 space-y-4 backdrop-blur-md">
-          <h2 className="text-lg font-semibold text-slate-200">3. Brand Integration</h2>
-          
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Theme Identity Color</label>
-            <div className="flex items-center gap-3">
-              <input
-                type="color"
-                value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
-                className="h-10 w-12 rounded-lg border border-slate-800 bg-transparent cursor-pointer p-0.5"
-              />
-              <input
-                type="text"
-                value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
-                className="block w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 font-mono text-xs uppercase text-slate-300 focus:outline-none"
-              />
+        <div className="border-4 border-b-8 border-black bg-black/20 p-6 space-y-6">
+          <h2 className="text-xl font-black uppercase text-[#ffff55] border-b-4 border-dashed border-black pb-2">3. Visual Core Profiles</h2>
+
+          {/* BG SELECTION FORK BLOCK */}
+          <div className="space-y-3">
+            <label className="block text-xs font-black uppercase text-[#e0a96d]">Background Mode Selection</label>
+            <div className="grid grid-cols-2 gap-2 bg-black/40 p-1.5 border-2 border-black">
+              <button
+                type="button"
+                onClick={() => setBgType('preset')}
+                className={`py-1.5 text-xs font-bold uppercase transition-all cursor-pointer ${bgType === 'preset' ? 'bg-[#5c8e32] text-white' : 'bg-black/40 text-zinc-400'}`}
+              >
+                🎮 Presets
+              </button>
+              <button
+                type="button"
+                onClick={() => setBgType('custom')}
+                className={`py-1.5 text-xs font-bold uppercase transition-all cursor-pointer ${bgType === 'custom' ? 'bg-[#5c8e32] text-white' : 'bg-black/40 text-zinc-400'}`}
+              >
+                🎨 Custom Color
+              </button>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Corporate Logo URL</label>
-            <input
-              type="url"
-              placeholder="https://brand.com/logo.png"
-              value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              className="block w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs text-white placeholder-slate-700 focus:border-indigo-500 focus:outline-none"
-            />
+          {bgType === 'preset' ? (
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase text-[#e0a96d]">Viewport Texture Profile</label>
+              <div className="grid grid-cols-1 gap-2 max-h-[180px] overflow-y-auto custom-scrollbar pr-1 bg-black/40 p-2 border-2 border-black">
+                {BG_STYLE_PRESETS.map((preset) => {
+                  const isCurrent = bgStyle === preset.id
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setBgStyle(preset.id)}
+                      className={`text-left p-2 border-2 text-xs transition-all cursor-pointer ${
+                        isCurrent ? 'bg-zinc-800 border-[#ffff55] text-white font-black' : 'bg-black/50 border-transparent text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="text-[11px]">{preset.name}</div>
+                      <div className="text-[9px] opacity-60 font-mono font-normal mt-0.5">{preset.desc}</div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase text-[#e0a96d]">Custom Background Hex Color</label>
+              <div className="flex gap-2">
+                <input type="color" value={customBgColor} onChange={e => setCustomBgColor(e.target.value)} className="h-9 w-12 border-2 border-black cursor-pointer bg-transparent" />
+                <input type="text" value={customBgColor} onChange={e => setCustomBgColor(e.target.value)} className="w-full bg-black/50 border-2 border-black px-2 text-xs font-mono text-zinc-300 uppercase" />
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <label className="block text-xs font-black uppercase text-[#e0a96d]">Primary Hex Button Accent</label>
+            <div className="flex gap-2">
+              <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="h-9 w-12 border-2 border-black cursor-pointer bg-transparent" />
+              <input type="text" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-full bg-black/50 border-2 border-black px-2 text-xs font-mono text-zinc-300 uppercase" />
+            </div>
           </div>
 
-          {/* Local Component Brand Preview Sandbox */}
-          <div className="rounded-xl border border-slate-800/60 bg-slate-950/40 p-4 space-y-3">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Live Theme Profile Token Preview</span>
-            <div className="flex items-center gap-2 border-b border-slate-900 pb-2">
-              {logoUrl.trim() ? (
-                <img src={logoUrl} alt="Preview Logo" className="h-5 max-w-[60px] object-contain error-fallback" />
-              ) : (
-                <div className="h-5 w-5 bg-slate-800 rounded flex items-center justify-center text-[10px]">🏢</div>
-              )}
-              <span className="text-xs font-bold text-white truncate max-w-[120px]">{surveyTitle || "Untitled Form"}</span>
-            </div>
-            <button
-              type="button"
-              style={{ backgroundColor: primaryColor }}
-              className="w-full text-center py-2 text-white font-semibold text-xs rounded-lg shadow-sm pointer-events-none filter brightness-95"
-            >
-              Sample Brand Submit Button
-            </button>
+          <div className="space-y-2">
+            <label className="block text-xs font-black uppercase text-[#e0a96d]">Corporate Logo Asset Link</label>
+            <input type="url" placeholder="https://domain.com/logo.png" value={logoUrl} onChange={e => setLogoUrl(e.target.value)} className="w-full bg-black/50 border-2 border-black p-2 text-xs text-white focus:outline-none" />
           </div>
         </div>
 
-        {/* Form Submission Pipeline Trigger */}
+        {/* REACTION SYSTEM SANDBOX LIVE MOCK PREVIEW */}
+        {localLiveMock && (
+          <div 
+            style={{ backgroundColor: getMockBgColor() }} 
+            className="border-4 border-b-8 border-black p-4 space-y-3 shadow-xl relative transition-colors duration-300"
+          >
+            <div className="absolute inset-0 bg-white/[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+            
+            <div className="relative z-10 bg-[#1a110b] border-4 border-black p-4 space-y-3">
+              <div className="flex items-center gap-2 border-b border-zinc-800 pb-1.5">
+                {localLiveMock.logoUrl.trim() ? (
+                  <img src={localLiveMock.logoUrl} alt="Logo" className="h-4 max-w-[60px] object-contain" onError={(e)=>{(e.target as HTMLElement).style.display='none'}} />
+                ) : <span className="text-xs">🏢</span>}
+                <span className="text-xs font-black text-white uppercase tracking-wide truncate max-w-[140px]">{localLiveMock.title}</span>
+              </div>
+              
+              <div className="space-y-3 max-h-[180px] overflow-y-auto pr-1">
+                {localLiveMock.questions.length === 0 ? (
+                  <p className="text-[10px] text-zinc-600 italic">No nodes compiled in workspace layout.</p>
+                ) : (
+                  localLiveMock.questions.map((q: any, i: number) => (
+                    <div key={q.id} className="bg-black/30 p-2 border border-black text-[10px] space-y-1">
+                      <span className="text-[#ffff55] font-bold block">{i + 1}. {q.label || 'Untitled Field Node'}</span>
+                      {q.type === 'short_text' && <div className="h-5 bg-black/60 border border-zinc-900 w-full" />}
+                      
+                      {q.type === 'multiple_choice' && (
+                        <div className="space-y-0.5 pt-0.5">
+                          {q.options?.map((optionString: string) => (
+                            <div key={optionString} className="text-[8px] text-zinc-400 font-mono bg-black/20 px-1 border border-zinc-900 truncate">
+                              ▪️ {optionString || 'Empty option state'}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {q.type === 'rating' && (
+                        <div className="flex gap-0.5">
+                          {['1','2','3','4','5'].map(n=><span key={n} className="w-3.5 h-3.5 bg-zinc-900 text-center text-[7px] text-zinc-500 border border-black flex items-center justify-center">{n}</span>)}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <button type="button" disabled style={{ backgroundColor: localLiveMock.primaryColor }} className="w-full text-center text-white text-[11px] font-black uppercase py-2 border-2 border-black opacity-60 cursor-not-allowed">Deploy Mock Trigger</button>
+            </div>
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full text-center py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm rounded-xl shadow-xl shadow-indigo-600/10 transition disabled:opacity-50 cursor-pointer"
+          className="w-full text-center border-4 border-b-8 border-black bg-[#5c8e32] py-3.5 text-xs font-black uppercase tracking-wider text-white hover:bg-[#4d7828] active:border-b-4 active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
         >
-          {isSubmitting ? "Syncing Batch Records..." : "🚀 Compile & Deploy Live Survey"}
+          {isSubmitting ? "Syncing Workspace Transactions..." : "🚀 Compile & Deploy Public Survey Node"}
         </button>
       </div>
 

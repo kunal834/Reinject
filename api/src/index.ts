@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import authRouter from '../routes/auth'       
 import surveysRouter from '../routes/survey'
+import publicApi from '../routes/public'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -22,5 +23,6 @@ app.get('/api/health', (c) => c.json({ status: 'ok' }))
 // This means: Any request to /api/auth/* goes straight to authRouter
 app.route('/api/auth', authRouter)
 app.route('/api/surveys', surveysRouter)
+app.route('/api/public', publicApi);
 
 export default app
