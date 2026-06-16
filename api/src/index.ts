@@ -1,33 +1,35 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import authRouter from '../routes/auth'       
-import surveysRouter from '../routes/survey'
+import authRouter from '../routes/auth'
 import publicApi from '../routes/public'
+import surveysRouter from '../routes/survey'
 
 const app = new Hono<{ Bindings: Env }>()
 
 // Global CORS config so your React app can safely deliver HttpOnly credentials
-app.use('/api/*', cors({
-  origin: (origin) => {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://formflow-app.pages.dev', // Frontend URL
-      
-    ]
-    return allowedOrigins.includes(origin) ? origin : allowedOrigins[1]
-  },
-  credentials: true,
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization']
-}))
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin) => {
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'https://formflow-app.pages.dev', // Frontend URL
+      ]
+      return allowedOrigins.includes(origin) ? origin : allowedOrigins[1]
+    },
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  }),
+)
 
 // Base Health Check
-app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy path 
+app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy path
 
 // 🔌 Mount Sub-Routers
 // This means: Any request to /api/auth/* goes straight to authRouter
 app.route('/api/auth', authRouter)
 app.route('/api/surveys', surveysRouter)
-app.route('/api/public', publicApi);
+app.route('/api/public', publicApi)
 
 export default app

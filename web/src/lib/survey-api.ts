@@ -10,7 +10,7 @@ export const submitResponse = async (id: string, answers: any) => {
   const response = await fetch(`${API_BASE_URL}/api/public/survey/${id}/respond`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers })
+    body: JSON.stringify({ answers }),
   })
   return response.json()
 }

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getPublicSurvey, submitResponse } from '../../lib/survey-api'
 
 export const Route = createFileRoute('/survey/$id')({
@@ -26,67 +26,67 @@ function PublicSurveyComponent() {
 
   // Initialize Data & Safe Parsing
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const data = await getPublicSurvey(id)
-      if (data.success) {
-        const rawSurvey = data.survey
-        console.log("Fetched survey data:", rawSurvey)
+    const fetchData = async () => {
+      try {
+        const data = await getPublicSurvey(id)
+        if (data.success) {
+          const rawSurvey = data.survey
+          console.log('Fetched survey data:', rawSurvey)
 
-        // 1. DYNAMIC BRANDING INTERCEPTOR LAYER
-        let parsedBranding: any = {}
-        
-        if (typeof rawSurvey.branding === 'string') {
-          try {
-            parsedBranding = JSON.parse(rawSurvey.branding)
-          } catch (e) {
-            console.error("Failed parsing inline branding string:", e)
-          }
-        } else if (rawSurvey.branding && typeof rawSurvey.branding === 'object') {
-          // Cleanly catch the pre-parsed object directly from Hono
-          parsedBranding = rawSurvey.branding
-        }
+          // 1. DYNAMIC BRANDING INTERCEPTOR LAYER
+          let parsedBranding: any = {}
 
-        // 2. DYNAMIC STATE HYDRATION (No hardcoded fallback strings to block updates)
-        setBrandColor(parsedBranding.primaryColor)
-        setBrandLogo(parsedBranding.logoUrl || '')
-        setBrandingBgType(parsedBranding.bgType || 'preset')
-        setBrandingBgStyle(parsedBranding.bgStyle)
-        setBrandingCustomBgColor(parsedBranding.customBgColor)
-        
-        // Safe Parsing Layer for each question's options array string
-        const normalizedQuestions = (rawSurvey.questions || []).map((q: any) => {
-          let optionsArray = []
-          if (typeof q.options === 'string') {
+          if (typeof rawSurvey.branding === 'string') {
             try {
-              optionsArray = JSON.parse(q.options)
+              parsedBranding = JSON.parse(rawSurvey.branding)
             } catch (e) {
-              console.error(`Failed parsing option strings on block ${q.id}:`, e)
+              console.error('Failed parsing inline branding string:', e)
             }
-          } else if (Array.isArray(q.options)) {
-            optionsArray = q.options
+          } else if (rawSurvey.branding && typeof rawSurvey.branding === 'object') {
+            // Cleanly catch the pre-parsed object directly from Hono
+            parsedBranding = rawSurvey.branding
           }
-          return { ...q, options: optionsArray }
-        })
 
-        setSurveyData({
-          ...rawSurvey,
-          questions: normalizedQuestions
-        })
-      } else {
-        setErrorMsg(data.error || "Survey structure not found.")
+          // 2. DYNAMIC STATE HYDRATION (No hardcoded fallback strings to block updates)
+          setBrandColor(parsedBranding.primaryColor)
+          setBrandLogo(parsedBranding.logoUrl || '')
+          setBrandingBgType(parsedBranding.bgType || 'preset')
+          setBrandingBgStyle(parsedBranding.bgStyle)
+          setBrandingCustomBgColor(parsedBranding.customBgColor)
+
+          // Safe Parsing Layer for each question's options array string
+          const normalizedQuestions = (rawSurvey.questions || []).map((q: any) => {
+            let optionsArray = []
+            if (typeof q.options === 'string') {
+              try {
+                optionsArray = JSON.parse(q.options)
+              } catch (e) {
+                console.error(`Failed parsing option strings on block ${q.id}:`, e)
+              }
+            } else if (Array.isArray(q.options)) {
+              optionsArray = q.options
+            }
+            return { ...q, options: optionsArray }
+          })
+
+          setSurveyData({
+            ...rawSurvey,
+            questions: normalizedQuestions,
+          })
+        } else {
+          setErrorMsg(data.error || 'Survey structure not found.')
+        }
+      } catch (err) {
+        setErrorMsg('Failed to establish context connection with database nodes.')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      setErrorMsg("Failed to establish context connection with database nodes.")
-    } finally {
-      setIsLoading(false)
     }
-  }
-  fetchData()
-}, [id])
+    fetchData()
+  }, [id])
 
   const handleInputChange = (questionLabel: string, value: string) => {
-    setFormAnswers(prev => ({ ...prev, [questionLabel]: value }))
+    setFormAnswers((prev) => ({ ...prev, [questionLabel]: value }))
   }
 
   const handleResponseFormSubmit = async (e: React.FormEvent) => {
@@ -98,10 +98,10 @@ function PublicSurveyComponent() {
       if (data.success) {
         setFormSubmitted(true)
       } else {
-        alert(data.error || "Submission rejected by server node.")
+        alert(data.error || 'Submission rejected by server node.')
       }
     } catch (err) {
-      alert("Transmission failure across client ports.")
+      alert('Transmission failure across client ports.')
     } finally {
       setIsSubmitting(false)
     }
@@ -113,7 +113,7 @@ function PublicSurveyComponent() {
     netherrack: '#210b14',
     endstone: '#150a21',
     deepslate: '#0f172a',
-    obsidian: '#070510'
+    obsidian: '#070510',
   }
 
   // Dynamic Background Rule Evaluator
@@ -123,24 +123,21 @@ function PublicSurveyComponent() {
   }
 
   return (
-
-    <div 
-      style={{ backgroundColor: `${resolveViewportBackground()}` }} 
+    <div
+      style={{ backgroundColor: `${resolveViewportBackground()}` }}
       className="relative min-h-screen font-['Share_Tech_Mono',_monospace] selection:bg-[#ff007f] selection:text-white antialiased flex flex-col items-center justify-start px-4 py-16 transition-colors duration-300"
     >
-      
       {/* Cybernetic Grid Pattern Overlay matching your app skin */}
-      <div 
-        className="absolute inset-0 -z-10 opacity-[0.015] pointer-events-none" 
-        style={{ 
-          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`, 
-          backgroundSize: '32px 32px' 
-        }} 
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.015] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+        }}
       />
 
       {/* Clean Paper Style Document Canvas Container */}
       <div className="w-full max-w-2xl bg-[#f8fafc] border-2 border-slate-300 p-6 sm:p-10 space-y-8 z-10 shadow-2xl text-slate-900">
-        
         {/* State: Loading */}
         {isLoading && (
           <div className="py-20 text-center text-[#ff007f] font-black uppercase tracking-widest text-sm animate-pulse">
@@ -173,12 +170,15 @@ function PublicSurveyComponent() {
         {/* State: Active Form Content View */}
         {!isLoading && !errorMsg && !formSubmitted && surveyData && (
           <div className="space-y-8">
-            
             {/* Survey Header Section */}
             <div className="border-b border-slate-200 pb-6 flex items-center justify-between gap-4">
               <div>
-                <span 
-                  style={{ color: brandColor, borderColor: `${brandColor}40`, backgroundColor: `${brandColor}0d` }}
+                <span
+                  style={{
+                    color: brandColor,
+                    borderColor: `${brandColor}40`,
+                    backgroundColor: `${brandColor}0d`,
+                  }}
                   className="inline-block rounded-sm border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest mb-2"
                 >
                   📝 ACTIVE_DOCUMENT_FEED
@@ -187,25 +187,34 @@ function PublicSurveyComponent() {
                   {surveyData.title}
                 </h1>
               </div>
-              
+
               {brandLogo && (
                 <div className="bg-white border border-slate-200 p-1 max-w-[90px] shrink-0 shadow-sm rounded-sm">
-                  <img src={brandLogo} alt="Brand Token Logo" className="max-h-10 object-contain mx-auto" onError={(e)=>{(e.target as HTMLElement).style.display='none'}} />
+                  <img
+                    src={brandLogo}
+                    alt="Brand Token Logo"
+                    className="max-h-10 object-contain mx-auto"
+                    onError={(e) => {
+                      ;(e.target as HTMLElement).style.display = 'none'
+                    }}
+                  />
                 </div>
               )}
             </div>
-            
+
             {/* Active Core Interactive Form */}
             <form onSubmit={handleResponseFormSubmit} className="space-y-6">
               {surveyData.questions.map((q: any, index: number) => (
-                <div key={q.id} className="space-y-3 bg-white p-5 border border-slate-200 shadow-sm rounded-sm">
-                  
+                <div
+                  key={q.id}
+                  className="space-y-3 bg-white p-5 border border-slate-200 shadow-sm rounded-sm"
+                >
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center justify-center rounded-sm bg-slate-100 px-2 py-0.5 text-[9px] font-mono text-slate-500 font-black border border-slate-200">
                       FIELD #{index + 1}
                     </span>
                     <label className="text-sm font-bold text-slate-900">
-                      {q.label || "Untitled form parameter declaration"}
+                      {q.label || 'Untitled form parameter declaration'}
                     </label>
                   </div>
 
@@ -218,8 +227,8 @@ function PublicSurveyComponent() {
                         placeholder="Type your text response here..."
                         className="w-full rounded-md border border-slate-200 bg-slate-50/50 p-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white transition-colors"
                         onChange={(e) => handleInputChange(q.label, e.target.value)}
-                        onFocus={(e) => e.target.style.borderColor = brandColor}
-                        onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                        onFocus={(e) => (e.target.style.borderColor = brandColor)}
+                        onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
                       />
                     </div>
                   )}
@@ -230,25 +239,28 @@ function PublicSurveyComponent() {
                       {q.options.map((opt: string) => {
                         const isSelected = formAnswers[q.label] === opt
                         return (
-                          <label 
-                            key={opt} 
-                            style={{ 
+                          <label
+                            key={opt}
+                            style={{
                               borderColor: isSelected ? brandColor : '#e2e8f0',
-                              backgroundColor: isSelected ? `${brandColor}0d` : 'transparent'
+                              backgroundColor: isSelected ? `${brandColor}0d` : 'transparent',
                             }}
                             className="p-3 border rounded-md text-xs font-bold text-slate-700 hover:text-slate-900 transition-all flex items-center gap-3 select-none cursor-pointer"
                           >
-                            <input 
-                              type="radio" 
-                              className="sr-only" 
-                              name={q.id} 
+                            <input
+                              type="radio"
+                              className="sr-only"
+                              name={q.id}
                               required
                               checked={isSelected}
-                              onChange={() => handleInputChange(q.label, opt)} 
+                              onChange={() => handleInputChange(q.label, opt)}
                             />
-                            <span 
-                              style={{ backgroundColor: isSelected ? brandColor : '#f1f5f9', borderColor: isSelected ? brandColor : '#cbd5e1' }}
-                              className="h-3 w-3 border rounded-full inline-block shrink-0 transition-colors" 
+                            <span
+                              style={{
+                                backgroundColor: isSelected ? brandColor : '#f1f5f9',
+                                borderColor: isSelected ? brandColor : '#cbd5e1',
+                              }}
+                              className="h-3 w-3 border rounded-full inline-block shrink-0 transition-colors"
                             />
                             {opt}
                           </label>
@@ -268,10 +280,10 @@ function PublicSurveyComponent() {
                               key={num}
                               type="button"
                               onClick={() => handleInputChange(q.label, num)}
-                              style={{ 
+                              style={{
                                 backgroundColor: isSelected ? brandColor : '#f8fafc',
                                 color: isSelected ? 'white' : '#64748b',
-                                borderColor: isSelected ? brandColor : '#e2e8f0'
+                                borderColor: isSelected ? brandColor : '#e2e8f0',
                               }}
                               className="w-10 h-10 border rounded-md font-black text-sm flex items-center justify-center transition-all cursor-pointer shadow-sm hover:border-slate-300"
                             >
@@ -283,7 +295,6 @@ function PublicSurveyComponent() {
                       <input type="hidden" required value={formAnswers[q.label] || ''} />
                     </div>
                   )}
-
                 </div>
               ))}
 
@@ -294,7 +305,7 @@ function PublicSurveyComponent() {
                 style={{ backgroundColor: brandColor }}
                 className="w-full text-center rounded-md px-8 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-40 cursor-pointer shadow-md"
               >
-                {isSubmitting ? "TRANSMITTING_PAYLOAD..." : "🚀 SUBMIT_MY_RESPONSES"}
+                {isSubmitting ? 'TRANSMITTING_PAYLOAD...' : '🚀 SUBMIT_MY_RESPONSES'}
               </button>
             </form>
           </div>

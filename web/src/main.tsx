@@ -1,8 +1,8 @@
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { routeTree } from './routes/routeTree.gen'
 import { AppProvider } from './context/Appcontext' // Ensure lowercase 'c' matches your sidebar!
+import { routeTree } from './routes/routeTree.gen'
 import './index.css'
 
 const router = createRouter({ routeTree })

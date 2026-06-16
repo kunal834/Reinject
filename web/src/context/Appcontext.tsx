@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787'
 
@@ -25,14 +25,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         //Including { credentials: 'include' } in your fetch configurations tells the browser's security engine to attach the session cookie to the request when communicating with your backend API.
         const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-          credentials: 'include'
+          credentials: 'include',
         })
         if (response.ok) {
           const data = await response.json()
           if (data.authenticated) setUser(data.user)
         }
       } catch (e) {
-        console.error("Session check failed", e)
+        console.error('Session check failed', e)
       } finally {
         setIsLoading(false)
       }
@@ -46,9 +46,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
-      credentials: 'include'
+      credentials: 'include',
     })
-    
+
     const data = await response.json()
     if (data.success) {
       setUser(data.user)
@@ -65,19 +65,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 3. Dashboard Data Logic
   const fetchSurveys = async () => {
-  // Target the specific endpoint running the database subquery aggregation
-  const response = await fetch(`${API_BASE_URL}/api/surveys/list`, {
-    credentials: 'include'
-  })
-  const data = await response.json()
-  if (data.success) setSurveys(data.surveys)
-}
+    // Target the specific endpoint running the database subquery aggregation
+    const response = await fetch(`${API_BASE_URL}/api/surveys/list`, {
+      credentials: 'include',
+    })
+    const data = await response.json()
+    if (data.success) setSurveys(data.surveys)
+  }
   const createSurvey = async (surveyData: any) => {
     const response = await fetch(`${API_BASE_URL}/api/surveys/build`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(surveyData),
-      credentials: 'include'
+      credentials: 'include',
     })
     const data = await response.json()
     if (data.success) {
@@ -87,16 +87,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ 
-      user, 
-      surveys, 
-      isAuthenticated: !!user,  // to prevent compilation errors
-      isLoading, 
-      login, 
-      logout, 
-      fetchSurveys, 
-      createSurvey 
-    }}>
+    <AppContext.Provider
+      value={{
+        user,
+        surveys,
+        isAuthenticated: !!user, // to prevent compilation errors
+        isLoading,
+        login,
+        logout,
+        fetchSurveys,
+        createSurvey,
+      }}
+    >
       {children}
     </AppContext.Provider>
   )

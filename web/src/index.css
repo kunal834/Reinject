@@ -1,16 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
-@import "tailwindcss";  
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap");
+@import "tailwindcss";
 @theme {
   /* This automatically generates utility classes like bg-brand, text-brand, border-brand */
   --color-brand: var(--survey-primary-color, #646cff); 
 }
 
-
-
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     background-color: #030712;
   }
 }
