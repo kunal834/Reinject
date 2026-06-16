@@ -1,7 +1,7 @@
 // API endpoints for public routes
 import { Hono } from 'hono'
 
-// Initialize a clean Hono instance completely free of the dashboard's authMiddleware!
+
 const publicApi = new Hono<{ Bindings: Env }>()
 
 publicApi.get('/survey/:id', async (c) => {

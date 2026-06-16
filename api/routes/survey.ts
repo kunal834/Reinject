@@ -79,17 +79,12 @@ dashboard.post('/build', async (c) => {
     return c.json({ success: false, error: 'Invalid survey schema payload.' }, 400)
   }
 
-  try {
-    // 1. Generate IDs before database operations
+  try {  
     const surveyId = crypto.randomUUID()
-
-    // 2. Prepare the Survey Insert
     const surveyStmt = c.env.DB.prepare(
       'INSERT INTO surveys (id, owner_id, title, branding) VALUES (?, ?, ?, ?)',
     ).bind(surveyId, user.id, title, JSON.stringify(branding))
 
-    // 3. Prepare the Question Inserts
-    // We map the questions array to a list of statements
     const questionStmts = questions.map((q, index) => {
       return c.env.DB.prepare(
         'INSERT INTO questions (id, survey_id, type, label, options, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
@@ -103,7 +98,7 @@ dashboard.post('/build', async (c) => {
       )
     })
 
-    // 4. Execute all queries as a single Batch (Transaction)
+    
     await c.env.DB.batch([surveyStmt, ...questionStmts])
 
     return c.json({ success: true, surveyId: surveyId })
@@ -152,8 +147,6 @@ dashboard.get('/list', async (c) => {
       .bind(user.id)
       .all()
 
-    // D1 returns subquery strings as raw text strings sometimes,
-    // so we parse the questions field back into objects for the frontend
     const sanitizedSurveys = results.map((survey: any) => ({
       ...survey,
       questions:
