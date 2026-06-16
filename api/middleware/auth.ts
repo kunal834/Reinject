@@ -1,4 +1,4 @@
-import { getCookie } from 'hono/cookie' // 👈 1. Import getCookie
+import { getCookie } from 'hono/cookie' 
 import { createMiddleware } from 'hono/factory'
 import { verify } from 'hono/jwt'
 
