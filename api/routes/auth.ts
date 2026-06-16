@@ -55,6 +55,7 @@ auth.post('/login', async (c) => {
     })
 
   } catch (error) {
+    console.error("Login Error Details:", error)
     return c.json({ success: false, error: "Authentication transaction crash." }, 500)
   }
 })

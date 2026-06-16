@@ -7,43 +7,36 @@ const dashboard = new Hono<{ Bindings: Env; Variables: { user: { id: string; ema
 // Enforce auth middleware guard for all dashboard routes here  
 dashboard.use('*', authMiddleware)
 
-/**
- * 1. GET ALL USER SURVEYS WITH RESPONSE & QUESTION COUNTS
- * Fetches all surveys owned by the logged-in user, joining aggregations 
- * so the frontend gets metadata in a single fast network query.
- */
-dashboard.get('/surveys', async (c) => {
-  const user = c.get('user')
+// below endpoint just for testing purpose if surveys are getting created or not
+// dashboard.get('/surveys', async (c) => {
+//   const user = c.get('user')
 
-  try {
-    const query = `
-      SELECT s.*, 
-        (SELECT COUNT(*) FROM questions q WHERE q.survey_id = s.id) as questions_count,
-        (SELECT COUNT(*) FROM responses r WHERE r.survey_id = s.id) as responses_count
-      FROM surveys s
-      WHERE s.owner_id = ?
-      ORDER BY s.created_at DESC
-    `
-    const { results } = await c.env.DB.prepare(query)
-      .bind(user.id)
-      .all()
+//   try {
+//     const query = `
+//       SELECT s.*, 
+//         (SELECT COUNT(*) FROM questions q WHERE q.survey_id = s.id) as questions_count,
+//         (SELECT COUNT(*) FROM responses r WHERE r.survey_id = s.id) as responses_count
+//       FROM surveys s
+//       WHERE s.owner_id = ?
+//       ORDER BY s.created_at DESC
+//     `
+//     const { results } = await c.env.DB.prepare(query)
+//       .bind(user.id)
+//       .all()
+    
+//       console.log("Raw survey results from DB:", results) // Debug log to check raw survey data
+//     // Parse branding JSON strings cleanly before dispatching to client
+//     const formattedSurveys = results.map(survey => ({
+//       ...survey,
+//       branding: JSON.parse((survey.branding as string) || '{}')
+//     }))
 
-    // Parse branding JSON strings cleanly before dispatching to client
-    const formattedSurveys = results.map(survey => ({
-      ...survey,
-      branding: JSON.parse((survey.branding as string) || '{}')
-    }))
+//     return c.json({ success: true, surveys: formattedSurveys })
+//   } catch (error) {
+//     return c.json({ success: false, error: 'Failed to aggregate workspace profiles.' }, 500)
+//   }
+// })
 
-    return c.json({ success: true, surveys: formattedSurveys })
-  } catch (error) {
-    return c.json({ success: false, error: 'Failed to aggregate workspace profiles.' }, 500)
-  }
-})
-
-/**
- * 2. GET ALL DISCRETE SUBMISSIONS FOR A SPECIFIC SURVEY
- * Validates survey ownership first, then pulls all text responses for data review.
- */
 dashboard.get('/surveys/:id/responses', async (c) => {
   const surveyId = c.req.param('id')
   const user = c.get('user')
@@ -119,6 +112,58 @@ dashboard.post('/build', async (c) => {
   } catch (error) {
     console.error('Survey creation failed:', error)
     return c.json({ success: false, error: 'Failed to create survey record.' }, 500)
+  }
+})
+
+// querying all the questions from surveys from questions table 
+dashboard.get('/list', async (c) => {
+  const user = c.get('user')
+
+  try {
+    // This query selects the survey details AND grabs all matching questions grouped as a JSON array
+    const { results } = await c.env.DB.prepare(`
+      SELECT 
+        s.*,
+        (
+          SELECT COUNT(*) 
+          FROM questions q 
+          WHERE q.survey_id = s.id
+        ) as questions_count,
+        (
+          SELECT COUNT(*) 
+          FROM responses r 
+          WHERE r.survey_id = s.id
+        ) as responses_count,
+        (
+          SELECT json_group_array(
+            json_object(
+              'id', q.id,
+              'type', q.type,
+              'label', q.label,
+              'options', q.options
+            )
+          )
+          FROM questions q
+          WHERE q.survey_id = s.id
+          ORDER BY q.sort_order ASC
+        ) as questions
+      FROM surveys s
+      WHERE s.owner_id = ?
+      ORDER BY s.created_at DESC
+    `).bind(user.id).all()
+
+    // D1 returns subquery strings as raw text strings sometimes, 
+    // so we parse the questions field back into objects for the frontend
+    const sanitizedSurveys = results.map((survey: any) => ({
+      ...survey,
+      questions: typeof survey.questions === 'string' ? JSON.parse(survey.questions) : (survey.questions || [])
+    }))
+
+    return c.json({ success: true, surveys: sanitizedSurveys })
+
+  } catch (error) {
+    console.error('Failed to fetch surveys:', error)
+    return c.json({ success: false, error: 'Database fetch failed' }, 500)
   }
 })
 export default dashboard

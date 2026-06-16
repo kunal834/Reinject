@@ -11,7 +11,7 @@ app.use('/api/*', cors({
   origin: (origin) => {
     const allowedOrigins = [
       'http://localhost:5173',
-      'https://formflow-app.pages.dev', 
+      'https://formflow-app.pages.dev', // Frontend URL
       
     ]
     return allowedOrigins.includes(origin) ? origin : allowedOrigins[1]
@@ -22,7 +22,7 @@ app.use('/api/*', cors({
 }))
 
 // Base Health Check
-app.get('/api/health', (c) => c.json({ status: 'ok' }))
+app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy path 
 
 // 🔌 Mount Sub-Routers
 // This means: Any request to /api/auth/* goes straight to authRouter

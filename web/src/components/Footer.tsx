@@ -1,12 +1,17 @@
 export function Footer() {
   return (
-    <footer className="w-full border-t-8 border-black bg-[#1a110b] font-mono select-none">
+    // Replaced muddy brown layer with a solid, premium midnight space baseline container
+    <footer className="w-full border-t border-slate-900 bg-[#0a0c16] font-['Share_Tech_Mono',_monospace] select-none relative">
+      
+      {/* Subtle Synthwave horizontal division border glow */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff007f]/30 to-transparent" />
+
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           
           {/* Informational Context */}
           <div className="space-y-4">
-            {/* Inline Pixel Logo exactly from image_54e660.png (small variant) */}
+            {/* Original Blocky Pixel Logo (Kept perfectly preserved in size and asset configuration) */}
             <div className="flex items-center transition hover:opacity-95">
               <div className="inline-flex border-2 border-black text-black font-extrabold text-xs tracking-tight bg-black">
                 {/* DO */}
@@ -23,37 +28,39 @@ export function Footer() {
                 <span className="w-6 h-6 flex items-center justify-center bg-[#10b981]">O</span>
               </div>
             </div>
-            <p className="text-sm font-bold leading-6 text-[#e0a96d] max-w-xs [text-shadow:2px_2px_0px_#141414]">
+            
+            {/* Descriptive block matching your high-contrast slate colors */}
+            <p className="text-sm font-bold leading-6 text-slate-400 max-w-xs">
               Empowering platform operators to gather dynamic insight under explicit human management.
             </p>
           </div>
 
-          {/* Links Column Grids */}
+          {/* Links Column Grids - Replaced toxic text shadow setups with crisp neon selections */}
           <div className="mt-8 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div>
-              <h3 className="text-sm font-bold text-[#ffff55] uppercase tracking-wide [text-shadow:2px_2px_0px_#141414]">Product Layouts</h3>
+              <h3 className="text-xs font-bold text-[#ffff55] uppercase tracking-widest">// Product Layouts</h3>
               <ul className="mt-4 space-y-2.5">
-                <li><a href="#" className="text-sm font-bold text-[#aaaaaa] transition hover:text-[#55ff55]">[ Survey Designer ]</a></li>
-                <li><a href="#" className="text-sm font-bold text-[#aaaaaa] transition hover:text-[#55ff55]">[ Dynamic Engines ]</a></li>
+                <li><a href="#" className="text-sm font-bold text-slate-500 transition hover:text-[#00f5ff]">[ Survey Designer ]</a></li>
+                <li><a href="#" className ="text-sm font-bold text-slate-500 transition hover:text-[#00f5ff]">[ Dynamic Engines ]</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#ffff55] uppercase tracking-wide [text-shadow:2px_2px_0px_#141414]">Data Resources</h3>
+              <h3 className="text-xs font-bold text-[#ffff55] uppercase tracking-widest">// Data Resources</h3>
               <ul className="mt-4 space-y-2.5">
-                <li><a href="#" className="text-sm font-bold text-[#aaaaaa] transition hover:text-[#55ffff]">[ API Schemas ]</a></li>
-                <li><a href="#" className="text-sm font-bold text-[#aaaaaa] transition hover:text-[#55ffff]">[ Cloudflare Deploy ]</a></li>
+                <li><a href="#" className="text-sm font-bold text-slate-500 transition hover:text-[#ff007f]">[ API Schemas ]</a></li>
+                <li><a href="#" className="text-sm font-bold text-slate-500 transition hover:text-[#ff007f]">[ Cloudflare Deploy ]</a></li>
               </ul>
             </div>
           </div>
 
         </div>
 
-        {/* Copy Framework Marker - Designed like systemic chat notifications */}
-        <div className="mt-12 border-t-4 border-dashed border-black pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs font-bold text-[#8a8a8a]">
+        {/* Copy Framework Marker - Cleaned up dashed divider properties to match thin glass edges */}
+        <div className="mt-12 border-t border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs font-bold text-slate-600">
             &copy; {new Date().getFullYear()} DoCoDeGO Platform. Open Source Framework Assignment.
           </p>
-          <p className="text-xs font-bold text-[#ff5555] tracking-wide uppercase [text-shadow:1px_1px_0px_#000]">
+          <p className="text-xs font-bold text-[#ff007f] tracking-widest uppercase bg-[#ff007f]/5 border border-[#ff007f]/20 px-3 py-1 shadow-[0_0_10px_rgba(255,0,127,0.05)]">
             &lt; Biometric Alignment Verified &gt;
           </p>
         </div>

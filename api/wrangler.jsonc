@@ -16,7 +16,7 @@
 	"d1_databases": [
 
 		{
-			"binding": "docodego_survey_db",
+			"binding": "DB",
 			"database_name": "docodego-survey-db",
 			"database_id": "942ad47f-68e3-49f0-b3a5-74ebf48f85e6"
 		}

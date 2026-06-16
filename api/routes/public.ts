@@ -4,18 +4,17 @@ import { Hono } from 'hono'
 // Initialize a clean Hono instance completely free of the dashboard's authMiddleware!
 const publicApi = new Hono<{ Bindings: Env }>()
 
-/**
- * 1. GET PUBLIC SURVEY CONFIGURATION MATRIX
- * Pulls down the title, custom branding token fields, and full question layout rows
- */
 publicApi.get('/survey/:id', async (c) => {
   const surveyId = c.req.param('id')
+  console.log("Received request for survey form layout with ID:", surveyId) // Debug log to check incoming survey ID
 
   try {
     // Fetch parent survey record details
     const survey = await c.env.DB.prepare("SELECT * FROM surveys WHERE id = ?")
       .bind(surveyId)
       .first<{ title: string; branding: string }>()
+
+      console.log("Fetched survey form layout record from DB:", survey) // Debug log to check fetched survey record
 
     if (!survey) {
       return c.json({ success: false, error: 'Survey form layout not found.' }, 404)
@@ -27,7 +26,8 @@ publicApi.get('/survey/:id', async (c) => {
     )
       .bind(surveyId)
       .all()
-
+     
+      console.log('Fetched questions for survey form layout:', questions)
     // Format serialized string entries back to JSON elements
     const formattedQuestions = questions.map(q => ({
       ...q,
@@ -47,15 +47,13 @@ publicApi.get('/survey/:id', async (c) => {
   }
 })
 
-/**
- * 2. POST ANONYMOUS RESPONSE PAYLOAD
- * Persists answer bundles directly to the responses table
- */
+
 publicApi.post('/survey/:id/respond', async (c) => {
   const surveyId = c.req.param('id')
 
   try {
     const { answers } = await c.req.json()
+    console.log("Received response submission for survey ID:", surveyId, "with answers:", answers) // Debug log to check incoming response payload
 
     if (!answers || typeof answers !== 'object') {
       return c.json({ success: false, error: 'Invalid answers payload schema format.' }, 400)

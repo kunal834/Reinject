@@ -20,7 +20,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [surveys, setSurveys] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // 1. Session Initialization: Check if the cookie is valid on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -66,13 +65,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 3. Dashboard Data Logic
   const fetchSurveys = async () => {
-    const response = await fetch(`${API_BASE_URL}/api/surveys/surveys`, {
-      credentials: 'include'
-    })
-    const data = await response.json()
-    if (data.success) setSurveys(data.surveys)
-  }
-
+  // Target the specific endpoint running the database subquery aggregation
+  const response = await fetch(`${API_BASE_URL}/api/surveys/list`, {
+    credentials: 'include'
+  })
+  const data = await response.json()
+  if (data.success) setSurveys(data.surveys)
+}
   const createSurvey = async (surveyData: any) => {
     const response = await fetch(`${API_BASE_URL}/api/surveys/build`, {
       method: 'POST',
@@ -91,7 +90,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{ 
       user, 
       surveys, 
-      isAuthenticated: !!user, 
+      isAuthenticated: !!user,  // to prevent compilation errors
       isLoading, 
       login, 
       logout, 
