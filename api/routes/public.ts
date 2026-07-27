@@ -1,20 +1,18 @@
 // API endpoints for public routes
 import { Hono } from 'hono'
-
+import z  from 'zod'
 
 const publicApi = new Hono<{ Bindings: Env }>()
 
 publicApi.get('/survey/:id', async (c) => {
   const surveyId = c.req.param('id')
-  console.log('Received request for survey form layout with ID:', surveyId) // Debug log to check incoming survey ID
+  console.log('Received request for survey form layout with ID:', surveyId) 
 
   try {
     // Fetch parent survey record details
     const survey = await c.env.DB.prepare('SELECT * FROM surveys WHERE id = ?')
       .bind(surveyId)
       .first<{ title: string; branding: string }>()
-
-    console.log('Fetched survey form layout record from DB:', survey) // Debug log to check fetched survey record
 
     if (!survey) {
       return c.json({ success: false, error: 'Survey form layout not found.' }, 404)

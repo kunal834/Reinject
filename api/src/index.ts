@@ -4,9 +4,9 @@ import authRouter from '../routes/auth'
 import publicApi from '../routes/public'
 import surveysRouter from '../routes/survey'
 
+
 const app = new Hono<{ Bindings: Env }>()
 
-// Global CORS config so your React app can safely deliver HttpOnly credentials
 app.use(
   '/api/*',
   cors({
@@ -24,12 +24,14 @@ app.use(
 )
 
 // Base Health Check
-app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy path
-
-// 🔌 Mount Sub-Routers
-// This means: Any request to /api/auth/* goes straight to authRouter
+app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy patth
 app.route('/api/auth', authRouter)
 app.route('/api/surveys', surveysRouter)
 app.route('/api/public', publicApi)
+
+
+// safes response for all other routes
+app.all('*', (c) => c.json({ message: 'This page does not exist.' }, 404))
+
 
 export default app

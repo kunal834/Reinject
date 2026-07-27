@@ -1,12 +1,11 @@
+-- Migration number: 0001 	 2026-07-26T08:48:44.707Z
 -- Users
 --no use of foreign key in users table because we want to keep the user data even if the survey is deleted
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL, -- Never store raw passwords!
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  email TEXT UNIQUE NOT NULL
 );
+
 -- Surveys 
 --use of foreign key in surveys table because we want to delete the survey if the user is deleted
 --branding stored as json text object in the database, for example: {"logo": "https://example.com/logo.png", "color": "#ff0000"}
