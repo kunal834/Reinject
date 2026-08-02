@@ -1,45 +1,19 @@
-import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth' // Ensure this extracts user from JWT
-
-// Variables type definition passes user profile into the execution context
-const dashboard = new Hono<{ Bindings: Env; Variables: { user: { id: string; email: string } } }>()
-
-// Enforce auth middleware guard for all dashboard routes here
-dashboard.use('*', authMiddleware)
-
-// below endpoint just for testing purpose if surveys are getting created or not
-// dashboard.get('/surveys', async (c) => {
-//   const user = c.get('user')
-
-//   try {
-//     const query = `
-//       SELECT s.*,
-//         (SELECT COUNT(*) FROM questions q WHERE q.survey_id = s.id) as questions_count,
-//         (SELECT COUNT(*) FROM responses r WHERE r.survey_id = s.id) as responses_count
-//       FROM surveys s
-//       WHERE s.owner_id = ?
-//       ORDER BY s.created_at DESC
-//     `
-//     const { results } = await c.env.DB.prepare(query)
-//       .bind(user.id)
-//       .all()
-
-//       console.log("Raw survey results from DB:", results) // Debug log to check raw survey data
-//     // Parse branding JSON strings cleanly before dispatching to client
-//     const formattedSurveys = results.map(survey => ({
-//       ...survey,
-//       branding: JSON.parse((survey.branding as string) || '{}')
-//     }))
-
-//     return c.json({ success: true, surveys: formattedSurveys })
-//   } catch (error) {
-//     return c.json({ success: false, error: 'Failed to aggregate workspace profiles.' }, 500)
-//   }
-// })
-
-dashboard.get('/surveys/:id/responses', async (c) => {
+import  {Context } from 'hono'  
+import  type { logininput } from '../validators/validator'
+// Type definition for the environment variables used in the handler functions
+type Env = {
+    Bindings: {
+        DB: D1Database;
+        JWT_SECRET: string;
+    },
+    variables: {
+        // user will come from middleware and will be available in the context of the route handler
+        user: logininput
+    }
+}   
+export const responses = async (c: Context<Env>) => {
   const surveyId = c.req.param('id')
-  const user = c.get('user')
+  const user: logininput    = c.get('user')
 
   try {
     // Ownership Guard Check: Validate request actor matches record owner definition
@@ -68,12 +42,13 @@ dashboard.get('/surveys/:id/responses', async (c) => {
   } catch (error) {
     return c.json({ success: false, error: 'Database pipeline read transaction failure.' }, 500)
   }
-})
+}
 
-// Survey creation route
-dashboard.post('/build', async (c) => {
+
+
+export const createSurvey = async (c: Context<Env>) => {
   const { title, questions, branding } = await c.req.json()
-  const user = c.get('user')
+  const user: loginschema = c.get('user')
   console.log('user', user)
   if (!title || !questions || !Array.isArray(questions)) {
     return c.json({ success: false, error: 'Invalid survey schema payload.' }, 400)
@@ -106,11 +81,10 @@ dashboard.post('/build', async (c) => {
     console.error('Survey creation failed:', error)
     return c.json({ success: false, error: 'Failed to create survey record.' }, 500)
   }
-})
+}
 
-// querying all the questions from surveys from questions table
-dashboard.get('/list', async (c) => {
-  const user = c.get('user')
+export const surveylist =  async (c : Context<Env>) => {
+  const user: loginschema = c.get('user')
 
   try {
     // This query selects the survey details AND grabs all matching questions grouped as a JSON array
@@ -160,5 +134,4 @@ dashboard.get('/list', async (c) => {
     console.error('Failed to fetch surveys:', error)
     return c.json({ success: false, error: 'Database fetch failed' }, 500)
   }
-})
-export default dashboard
+}

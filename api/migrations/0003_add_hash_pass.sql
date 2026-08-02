@@ -1,0 +1,2 @@
+-- Migration number: 0003 	 2026-07-28T14:53:22.426Z
+ALTER TABLE users ADD COLUMN password_hash TEXT NOT NULL DEFAULT '';

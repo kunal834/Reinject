@@ -7,9 +7,13 @@
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
     "postinstall": "wrangler types",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+  "migrate:create": "wrangler d1 migrations create DB",
+    "migrate:local": "wrangler d1 migrations apply DB --local",
+    "migrate:prod": "wrangler d1 migrations apply DB --remote"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "hono": "^4.12.22",
     "zod": "^4.4.3"
   },

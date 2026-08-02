@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import authRouter from '../routes/auth'
-import publicApi from '../routes/public'
-import surveysRouter from '../routes/survey'
+import authRouter from "./routes/auth"
+import publicApi from './routes/public'
+import surveysRouter from './routes/survey'
 
 
 const app = new Hono<{ Bindings: Env }>()
