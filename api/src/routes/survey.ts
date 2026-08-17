@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { authMiddleware } from '../middleware/auth' // Ensure this extracts user from JWT
-import {responses, surveylist , createSurvey } from '../../handlers/survey.handler'
+import {responses, surveylist , createSurvey } from '../handlers/survey.handler'
 
 import  type { logininput} from '../validators/validator'
 
@@ -48,4 +48,6 @@ dashboard.get('/surveys/:id/responses' , responses) // Route to fetch all respon
 dashboard.post('/build', createSurvey) // Route to create a new survey
 // querying all the questions from surveys from questions table
 dashboard.get('/list', surveylist)
+
+
 export default dashboard
