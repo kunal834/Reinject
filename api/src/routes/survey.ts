@@ -46,6 +46,7 @@ dashboard.use('*', authMiddleware)
 dashboard.get('/surveys/:id/responses' , responses) // Route to fetch all responses for a specific survey
 // Survey creation route
 dashboard.post('/build', createSurvey) // Route to create a new survey
+
 // querying all the questions from surveys from questions table
 dashboard.get('/list', surveylist)
 

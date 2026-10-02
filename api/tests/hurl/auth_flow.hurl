@@ -1,8 +1,5 @@
-# asserts use to check result if its our expectation otherwise give error 
-# JSONPATH is an method of digging stuffs from object for matching results 
-
-
-POST {{basurl}}/api/auth/signup
+# 1. Signup
+POST {{baseurl}}/api/auth/signup
 Content-Type: application/json
 {
   "name": "{{testname}}",
@@ -13,23 +10,27 @@ HTTP 200
 [Asserts]
 jsonpath "$.success" == true
 
-GET {{basurl}}/api/auth/me
+# 2. Verify authenticated state
+GET {{baseurl}}/api/auth/me
 HTTP 200
 [Asserts]
 jsonpath "$.authenticated" == true
 jsonpath "$.user.email" == "{{testuser}}"
 
-POST {{basurl}}/api/auth/logout
+# 3. Logout
+POST {{baseurl}}/api/auth/logout
 HTTP 200
 [Asserts]
 jsonpath "$.success" == true
 
-GET {{basurl}}/api/auth/me
+# 4. Verify unauthenticated state
+GET {{baseurl}}/api/auth/me
 HTTP 401
 [Asserts]
 jsonpath "$.authenticated" == false
 
-POST {{basurl}}/api/auth/login
+# 5. Login
+POST {{baseurl}}/api/auth/login
 Content-Type: application/json
 {
   "email": "{{testuser}}",
@@ -39,7 +40,8 @@ HTTP 200
 [Asserts]
 jsonpath "$.success" == true
 
-GET {{basurl}}/api/auth/me
+# 6. Verify authenticated state after login
+GET {{baseurl}}/api/auth/me
 HTTP 200
 [Asserts]
 jsonpath "$.authenticated" == true

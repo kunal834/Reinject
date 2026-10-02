@@ -79,6 +79,7 @@ export const createSurvey = async (c: Context<Env>) => {
     return c.json({ success: true, surveyId: surveyId })
   } catch (error) {
     console.error('Survey creation failed:', error)
+    
     return c.json({ success: false, error: 'Failed to create survey record.' }, 500)
   }
 }
