@@ -8,13 +8,18 @@
     "cf-typegen": "wrangler types",
     "postinstall": "wrangler types",
     "typecheck": "tsc --noEmit",
-     "migrate:create": "wrangler d1 migrations create DB",
+    "migrate:create": "wrangler d1 migrations create DB",
     "migrate:local": "wrangler d1 migrations apply DB --local",
     "migrate:prod": "wrangler d1 migrations apply DB --remote",
-     "auth_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
-     "auth_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
-     "survey_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
-      "survey_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl"
+    "auth_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
+    "auth_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
+    "survey_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
+    "survey_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "pnpm auth_test && pnpm survey_test"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -22,8 +27,12 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@types/node": "^25.9.1",
+    "@vitest/runner": "^4.1.0",
+    "@vitest/snapshot": "^4.1.0",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.0",
     "wrangler": "^4.114.0"
   }
 }
