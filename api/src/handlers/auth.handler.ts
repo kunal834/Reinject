@@ -8,6 +8,9 @@ import { hash, compare } from 'bcryptjs'
 
 
 type Env = {
+  // in Hono we declare all the variables and binding here so that we can use in all the function in this  handler functios 
+  
+
   Bindings: {
     DB: D1Database;
     JWT_SECRET: string;
