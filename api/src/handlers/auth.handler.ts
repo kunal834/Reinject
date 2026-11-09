@@ -21,9 +21,9 @@ export const login = async (c: Context<Env>) => {
 
   try {
     const body = await c.req.json();
-    console.log('Request Body:', body); // Log the entire request body for debugging
+    // console.log('Request Body:', body); // Log the entire request body for debugging
     const validation = loginschema.safeParse(body);
-    console.log('Validation Result:', validation); // Log the validation result for debugging
+    // console.log('Validation Result:', validation); // Log the validation result for debugging
 
     if (!validation.success) {
       return c.json(
@@ -122,7 +122,7 @@ export const signup = async (c: Context<Env>) => {
     }
   // 2. Ensure Secret Exists
     if (!c.env.JWT_SECRET) {
-      console.error('CRITICAL: c.env.JWT_SECRET is missing!');
+      // console.error('CRITICAL: c.env.JWT_SECRET is missing!');
       return c.json({ success: false, error: 'Server configuration error.' }, 500);
     }
 
@@ -181,8 +181,10 @@ export const userinfo = async (c: Context<Env>) => {
 
 
   const token = cookieToken || authHeader
+  
 
-  console.log('Cookie Token:', cookieToken)
+  // Token checking and validation
+  // console.log('Cookie Token:', cookieToken)
   if (!token) {
     console.log('No token found in cookie or header.')
     return c.json({ success: false, authenticated: false, error: 'No token provided' }, 401)
@@ -196,7 +198,7 @@ export const userinfo = async (c: Context<Env>) => {
     const jwtPayloadValidation = payloadschema.safeParse(payload)
 
 
-    console.log('payload eerr', jwtPayloadValidation)
+    // console.log('payload eerr', jwtPayloadValidation)
     if (!jwtPayloadValidation.success) {
       console.error('JWT Payload Validation Error:', jwtPayloadValidation.error)
       return c.json({ success: false, authenticated: false, error: 'Invalid token payload' }, 401)

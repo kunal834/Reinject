@@ -29,3 +29,40 @@ export const payloadschema = z.object({
 export type user = z.infer<typeof signupschema>;
 
 
+export const surveySchema = z.object({
+    title: z.string().min(1, 'Survey title is required.'),
+    branding: z.record(z.string(), z.unknown()).optional(),
+    questions: z.array(z.object({
+        type: z.string().min(1, 'Question type is required.'),
+        label: z.string().min(1, 'Question label is required.'),
+        options: z.array(z.string()).optional(),
+        sort_order: z.number().int().optional()
+    }))
+});
+
+export type surveyinput = z.infer<typeof surveySchema>;
+
+export const responsesSchema = z.object({
+    answers: z.record(
+        z.string(),
+        z.union([
+            z.string(),
+            z.number(),
+            z.boolean(),
+            z.array(z.string()),
+            z.null(),
+        ]),
+    ),
+});
+
+
+export type responsesinput = z.infer<typeof responsesSchema>;
+
+export const responseOutputSchema = z.array(
+  z.object({
+    id: z.string(),
+    survey_id: z.string(),
+    answers: z.record(z.string(), z.unknown()),
+    created_at: z.string().nullable().optional(),
+  }),
+)

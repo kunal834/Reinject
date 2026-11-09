@@ -1,5 +1,6 @@
 
-import {Context} from 'hono'
+import type { Context } from 'hono'
+import { responsesSchema } from '../validators/validator'
 
 type Env = {
     Bindings:
@@ -52,13 +53,13 @@ export const submitSurveyResponse = async (c : Context<Env>) => {
   const surveyId = c.req.param('id')
 
   try {
-    const { answers } = await c.req.json()
-    console.log('Received response submission for survey ID:', surveyId, 'with answers:', answers) // Debug log to check incoming response payload
+    const validation = responsesSchema.safeParse(await c.req.json())
 
-    if (!answers || typeof answers !== 'object') {
+    if (!validation.success) {
       return c.json({ success: false, error: 'Invalid answers payload schema format.' }, 400)
     }
 
+    const { answers } = validation.data
     const responseId = crypto.randomUUID()
 
     // Insert response text blob straight into D1 table records

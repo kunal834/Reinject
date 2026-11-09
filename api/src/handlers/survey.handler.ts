@@ -1,19 +1,23 @@
-import  {Context } from 'hono'  
-import  type { logininput } from '../validators/validator'
+import type { Context } from 'hono'
+import { surveySchema, responseOutputSchema } from '../validators/validator'
+import type { logininput } from '../validators/validator'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
         DB: D1Database;
         JWT_SECRET: string;
     },
-    variables: {
-        // user will come from middleware and will be available in the context of the route handler
+    Variables: {
         user: logininput
     }
 }   
+
+
+// Handler function to fetch survey responses for a specific survey
 export const responses = async (c: Context<Env>) => {
   const surveyId = c.req.param('id')
   const user: logininput    = c.get('user')
+  // console.log('user', user)
 
   try {
     // Ownership Guard Check: Validate request actor matches record owner definition
@@ -32,13 +36,23 @@ export const responses = async (c: Context<Env>) => {
       .bind(surveyId)
       .all()
 
+
+
+
+
     // Cleanly parse payload answer blocks back into usable arrays/objects
     const formattedResponses = results.map((resp) => ({
       ...resp,
       answers: JSON.parse((resp.answers as string) || '{}'),
     }))
 
-    return c.json({ success: true, responses: formattedResponses })
+
+    const validation = responseOutputSchema.safeParse(formattedResponses)
+    console.log('Validation Result:', validation) // Log the validation result for debugging
+    if (!validation.success) {
+      return c.json({ success: false, error: 'Response output schema validation failed.' }, 500)
+    }
+    return c.json({ success: true, responses: validation.data } , 200)
   } catch (error) {
     return c.json({ success: false, error: 'Database pipeline read transaction failure.' }, 500)
   }
@@ -47,12 +61,15 @@ export const responses = async (c: Context<Env>) => {
 
 
 export const createSurvey = async (c: Context<Env>) => {
-  const { title, questions, branding } = await c.req.json()
-  const user: loginschema = c.get('user')
-  console.log('user', user)
-  if (!title || !questions || !Array.isArray(questions)) {
+  const user: logininput = c.get('user')
+  const validation = surveySchema.safeParse(await c.req.json())
+
+  if (!validation.success) {
     return c.json({ success: false, error: 'Invalid survey schema payload.' }, 400)
   }
+
+  const { title, questions, branding } = validation.data
+
 
   try {  
     const surveyId = crypto.randomUUID()
@@ -85,7 +102,7 @@ export const createSurvey = async (c: Context<Env>) => {
 }
 
 export const surveylist =  async (c : Context<Env>) => {
-  const user: loginschema = c.get('user')
+  const user: logininput = c.get('user')
 
   try {
     // This query selects the survey details AND grabs all matching questions grouped as a JSON array

@@ -15,11 +15,13 @@
     "auth_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
     "survey_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
     "survey_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
+    "public_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/public_flow.hurl",
+    "public_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/public_flow.hurl",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:e2e": "pnpm auth_test && pnpm survey_test"
+    "test:e2e": "pnpm auth_test && pnpm survey_test && pnpm public_test"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
