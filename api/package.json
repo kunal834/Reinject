@@ -1,0 +1,40 @@
+{
+  "name": "sde-intern-task-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "postinstall": "wrangler types",
+    "typecheck": "tsc --noEmit",
+    "migrate:create": "wrangler d1 migrations create DB",
+    "migrate:local": "wrangler d1 migrations apply DB --local",
+    "migrate:prod": "wrangler d1 migrations apply DB --remote",
+    "auth_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
+    "auth_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
+    "survey_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
+    "survey_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/survey_flow.hurl",
+    "public_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/public_flow.hurl",
+    "public_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/public_flow.hurl",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "pnpm auth_test && pnpm survey_test && pnpm public_test"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "hono": "^4.12.22",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@types/node": "^25.9.1",
+    "@vitest/runner": "^4.1.0",
+    "@vitest/snapshot": "^4.1.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.114.0"
+  }
+}

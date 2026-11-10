@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sde-intern-task-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-05-22",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	// Add bindings here as you need them, then run `pnpm cf-typegen` to refresh `Env` types.
+	//
+	// Examples:
+	//
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "survey",
+			"database_id": "26072300-9faf-4d5a-bdde-2bb9cba0da2f"
+		}
+	]
+	//
+	// "kv_namespaces": [
+	//   { "binding": "SESSIONS", "id": "<id>" }
+	// ],
+	//
+	// "r2_buckets": [
+	//   { "binding": "ASSETS", "bucket_name": "survey-builder-assets" }
+	// ]
+}

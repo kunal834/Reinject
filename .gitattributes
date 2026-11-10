@@ -1,0 +1,9 @@
+* text=auto eol=lf
+
+# binary assets — never apply line-ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
