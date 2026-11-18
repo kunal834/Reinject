@@ -1,6 +1,7 @@
 
 import type { Context } from 'hono'
 import { responsesSchema } from '../validators/validator'
+import {findsurveybyid , findquestionsbysurveyid , insertSurveyResponse} from '../db/app.repo'
 
 type Env = {
     Bindings:
@@ -14,24 +15,17 @@ export const getpublicSurvey = async (c: Context<Env>) => {
 
   try {
     // Fetch parent survey record details
-    const survey = await c.env.DB.prepare('SELECT * FROM surveys WHERE id = ?')
-      .bind(surveyId)
-      .first<{ title: string; branding: string }>()
-
+    const survey = await findsurveybyid(c, surveyId)
     if (!survey) {
       return c.json({ success: false, error: 'Survey form layout not found.' }, 404)
     }
 
-    // Fetch related layout question entries ordered by sort order index
-    const { results: questions } = await c.env.DB.prepare(
-      'SELECT id, type, label, options FROM questions WHERE survey_id = ? ORDER BY sort_order ASC',
-    )
-      .bind(surveyId)
-      .all()
+    // Fetch related layout question entries
+    const results = await findquestionsbysurveyid(c, surveyId)
 
-    console.log('Fetched questions for survey form layout:', questions)
+    console.log('Fetched questions for survey form layout:', results) // Debugging line to check the fetched questions
     // Format serialized string entries back to JSON elements
-    const formattedQuestions = questions.map((q) => ({
+    const formattedQuestions = results.map((q) => ({
       ...q,
       options: JSON.parse((q.options as string) || '[]'),
     }))
@@ -62,10 +56,7 @@ export const submitSurveyResponse = async (c : Context<Env>) => {
     const { answers } = validation.data
     const responseId = crypto.randomUUID()
 
-    // Insert response text blob straight into D1 table records
-    await c.env.DB.prepare('INSERT INTO responses (id, survey_id, answers) VALUES (?, ?, ?)')
-      .bind(responseId, surveyId, JSON.stringify(answers))
-      .run()
+    await insertSurveyResponse(c, responseId, surveyId, JSON.stringify(answers))
 
     return c.json({ success: true, message: 'Response payload committed successfully.' }, 201)
   } catch (error) {

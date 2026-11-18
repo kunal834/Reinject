@@ -4,6 +4,7 @@ import { loginschema, signupschema, payloadschema } from '../validators/validato
 import { sign, verify } from 'hono/jwt'
 import { getCookie, setCookie } from 'hono/cookie'
 import { hash, compare } from 'bcryptjs'
+import {finduserbyemail, insertuser} from '../db/app.repo'
 
 
 
@@ -41,9 +42,7 @@ export const login = async (c: Context<Env>) => {
 
     const cleanEmail = email.toLowerCase().trim()
 
-    let existingUser = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?') // we will not use email variable directly in query to prevent SQL injection
-      .bind(cleanEmail)
-      .first<{ id: string; email: string; password_hash: string }>()
+    let existingUser = await finduserbyemail(c, cleanEmail);
 
     if (!existingUser) {
       return c.json({ success: false, error: 'Invalid email or password.' }, 400);
@@ -113,9 +112,7 @@ export const signup = async (c: Context<Env>) => {
     // no need to put checks regarding email and password as zod do it forus
     const cleanEmail = email.toLowerCase().trim()
 
-    const existingUser = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?')
-      .bind(cleanEmail)
-      .first<{ id: string; email: string; name: string; password_hash: string }>()
+    const existingUser = await finduserbyemail(c, cleanEmail);
 
     if (existingUser) {
       return c.json({ success: false, error: 'Email already exists.' }, 400)
@@ -128,12 +125,8 @@ export const signup = async (c: Context<Env>) => {
 
     const hashedPassword = await hash(password, 10) // Hash the password before storing it
     const newUserId = crypto.randomUUID()
-
-    await c.env.DB.prepare('INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)')
-      .bind(newUserId, name, cleanEmail, hashedPassword) // In a real application, you should hash the password before storing it
-      .run()
-
-
+     
+     const isinserteduser = await insertuser(c, name, cleanEmail, hashedPassword) // Insert the new user into the database
 
 
 

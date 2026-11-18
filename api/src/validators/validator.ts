@@ -24,7 +24,7 @@ export const payloadschema = z.object({
   iat: z.number().optional(),
   })
 
-
+export type JWTPayload = z.infer<typeof payloadschema>;
 
 export type user = z.infer<typeof signupschema>;
 

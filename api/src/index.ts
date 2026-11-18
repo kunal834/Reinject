@@ -28,6 +28,7 @@ app.get('/api/health', (c) => c.json({ status: 'ok' })) // Happy patth
 app.route('/api/auth', authRouter)
 app.route('/api/surveys', surveysRouter)
 app.route('/api/public', publicApi)
+// app.route('/api/admin' ,  adminrouter)
 
 
 // safes response for all other routes

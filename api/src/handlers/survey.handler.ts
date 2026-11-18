@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 import { surveySchema, responseOutputSchema } from '../validators/validator'
-import type { logininput } from '../validators/validator'
+import type { JWTPayload } from '../validators/validator'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
@@ -8,7 +8,7 @@ type Env = {
         JWT_SECRET: string;
     },
     Variables: {
-        user: logininput
+        user: JWTPayload
     }
 }   
 
@@ -16,7 +16,7 @@ type Env = {
 // Handler function to fetch survey responses for a specific survey
 export const responses = async (c: Context<Env>) => {
   const surveyId = c.req.param('id')
-  const user: logininput    = c.get('user')
+  const user: JWTPayload    = c.get('user')
   // console.log('user', user)
 
   try {
@@ -61,7 +61,8 @@ export const responses = async (c: Context<Env>) => {
 
 
 export const createSurvey = async (c: Context<Env>) => {
-  const user: logininput = c.get('user')
+  const user = c.get('user')as JWTPayload
+  console.log('user', user.id)
   const validation = surveySchema.safeParse(await c.req.json())
 
   if (!validation.success) {
