@@ -1,7 +1,7 @@
 
 import type { Context } from 'hono'
 import { responsesSchema } from '../validators/validator'
-import {findsurveybyid , findquestionsbysurveyid , insertSurveyResponse} from '../db/app.repo'
+import {findsurveybyid , findquestionsbysurveyid , insertSurveyResponse} from '../db/public.repo'
 
 type Env = {
     Bindings:
@@ -15,7 +15,7 @@ export const getpublicSurvey = async (c: Context<Env>) => {
 
   try {
     // Fetch parent survey record details
-    const survey = await findsurveybyid(c, surveyId)
+    const survey = await findsurveybyid(c.env.DB, surveyId)
     if (!survey) {
       return c.json({ success: false, error: 'Survey form layout not found.' }, 404)
     }
@@ -56,7 +56,7 @@ export const submitSurveyResponse = async (c : Context<Env>) => {
     const { answers } = validation.data
     const responseId = crypto.randomUUID()
 
-    await insertSurveyResponse(c, responseId, surveyId, JSON.stringify(answers))
+    await insertSurveyResponse(c.env.DB, responseId, surveyId, JSON.stringify(answers))
 
     return c.json({ success: true, message: 'Response payload committed successfully.' }, 201)
   } catch (error) {

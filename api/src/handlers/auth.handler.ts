@@ -4,7 +4,7 @@ import { loginschema, signupschema, payloadschema } from '../validators/validato
 import { sign, verify } from 'hono/jwt'
 import { getCookie, setCookie } from 'hono/cookie'
 import { hash, compare } from 'bcryptjs'
-import {finduserbyemail, insertuser} from '../db/app.repo'
+import {finduserbyemail, insertuser} from '../db/auth.repo'
 
 
 
@@ -41,8 +41,9 @@ export const login = async (c: Context<Env>) => {
     // no need to put checks regarding email and password as zod do it forus 
 
     const cleanEmail = email.toLowerCase().trim()
-
-    let existingUser = await finduserbyemail(c, cleanEmail);
+    
+// We should not pass Hono’s c context into the repository layer because that makes the repository dependent on Hono. The repository layer should focus only on database operations. Therefore, the handler should pass only the required dependency, such as c.env.DB, to the repository.    
+    let existingUser = await finduserbyemail(c.env.DB, cleanEmail);
 
     if (!existingUser) {
       return c.json({ success: false, error: 'Invalid email or password.' }, 400);
@@ -112,7 +113,7 @@ export const signup = async (c: Context<Env>) => {
     // no need to put checks regarding email and password as zod do it forus
     const cleanEmail = email.toLowerCase().trim()
 
-    const existingUser = await finduserbyemail(c, cleanEmail);
+    const existingUser = await finduserbyemail(c.env.DB, cleanEmail);
 
     if (existingUser) {
       return c.json({ success: false, error: 'Email already exists.' }, 400)
@@ -126,8 +127,8 @@ export const signup = async (c: Context<Env>) => {
     const hashedPassword = await hash(password, 10) // Hash the password before storing it
     const newUserId = crypto.randomUUID()
      
-     const isinserteduser = await insertuser(c, name, cleanEmail, hashedPassword) // Insert the new user into the database
-
+  
+     const isinserteduser = await insertuser(c.env.DB,  newUserId , name, cleanEmail, hashedPassword) // Insert the new user into the database
 
 
     // Double check secret exists

@@ -1,6 +1,7 @@
 import type { Context } from 'hono'
 import { surveySchema, responseOutputSchema } from '../validators/validator'
 import type { JWTPayload } from '../validators/validator'
+import {findsurveyresponses, getSurvey , Insertsurveydata} from '../db/survey.repo'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
@@ -21,20 +22,14 @@ export const responses = async (c: Context<Env>) => {
 
   try {
     // Ownership Guard Check: Validate request actor matches record owner definition
-    const survey = await c.env.DB.prepare('SELECT owner_id FROM surveys WHERE id = ?')
-      .bind(surveyId)
-      .first<{ owner_id: string }>()
+    const survey = await getSurvey(c.env.DB, surveyId)
 
     if (!survey || survey.owner_id !== user.id) {
       return c.json({ success: false, error: 'Access denied or document missing.' }, 403)
     }
 
     // Pull full matching response sequence lines
-    const { results } = await c.env.DB.prepare(
-      'SELECT * FROM responses WHERE survey_id = ? ORDER BY created_at DESC',
-    )
-      .bind(surveyId)
-      .all()
+    const { results } = await findsurveyresponses(c.env.DB, surveyId)
 
 
 
@@ -74,9 +69,7 @@ export const createSurvey = async (c: Context<Env>) => {
 
   try {  
     const surveyId = crypto.randomUUID()
-    const surveyStmt = c.env.DB.prepare(
-      'INSERT INTO surveys (id, owner_id, title, branding) VALUES (?, ?, ?, ?)',
-    ).bind(surveyId, user.id, title, JSON.stringify(branding))
+    const surveyStmt = await Insertsurveydata(c.env.DB, surveyId, user.id, title, JSON.stringify(branding))
 
     const questionStmts = questions.map((q, index) => {
       return c.env.DB.prepare(
