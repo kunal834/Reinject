@@ -1,7 +1,7 @@
 import type { Context } from 'hono'
 import { surveySchema, responseOutputSchema } from '../validators/validator'
 import type { JWTPayload } from '../validators/validator'
-import {findsurveyresponses, getSurvey , Insertsurveydata} from '../db/survey.repo'
+import {findsurveyresponses, getSurvey , Insertsurveydata , Insertquestiondata , getsurveywithquestions} from '../db/survey.repo'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
@@ -33,7 +33,7 @@ export const responses = async (c: Context<Env>) => {
 
 
 
-
+ 
 
     // Cleanly parse payload answer blocks back into usable arrays/objects
     const formattedResponses = results.map((resp) => ({
@@ -72,16 +72,8 @@ export const createSurvey = async (c: Context<Env>) => {
     const surveyStmt = await Insertsurveydata(c.env.DB, surveyId, user.id, title, JSON.stringify(branding))
 
     const questionStmts = questions.map((q, index) => {
-      return c.env.DB.prepare(
-        'INSERT INTO questions (id, survey_id, type, label, options, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
-      ).bind(
-        crypto.randomUUID(), // New UUID for each question
-        surveyId, // Foreign Key link
-        q.type,
-        q.label,
-        JSON.stringify(q.options || []),
-        index, // sort_order
-      )
+        return Insertquestiondata(c.env.DB, crypto.randomUUID(), surveyId, q.type, q.label, JSON.stringify(q.options || []), index)
+
     })
 
     
@@ -96,42 +88,11 @@ export const createSurvey = async (c: Context<Env>) => {
 }
 
 export const surveylist =  async (c : Context<Env>) => {
-  const user: logininput = c.get('user')
+  const user:logininput = c.get('user')
 
   try {
     // This query selects the survey details AND grabs all matching questions grouped as a JSON array
-    const { results } = await c.env.DB.prepare(`
-      SELECT 
-        s.*,
-        (
-          SELECT COUNT(*) 
-          FROM questions q 
-          WHERE q.survey_id = s.id
-        ) as questions_count,
-        (
-          SELECT COUNT(*) 
-          FROM responses r 
-          WHERE r.survey_id = s.id
-        ) as responses_count,
-        (
-          SELECT json_group_array(
-            json_object(
-              'id', q.id,
-              'type', q.type,
-              'label', q.label,
-              'options', q.options
-            )
-          )
-          FROM questions q
-          WHERE q.survey_id = s.id
-          ORDER BY q.sort_order ASC
-        ) as questions
-      FROM surveys s
-      WHERE s.owner_id = ?
-      ORDER BY s.created_at DESC
-    `)
-      .bind(user.id)
-      .all()
+    const { results } = 
 
     const sanitizedSurveys = results.map((survey: any) => ({
       ...survey,

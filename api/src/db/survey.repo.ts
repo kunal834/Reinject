@@ -30,15 +30,83 @@ export const findsurveyresponses = async (db: D1Database, surveyId: string) => {
 }
 
 
-export const Insertsurveydata = async (db: D1Database, surveyId: string, ownerId: string, title: string, branding: string) => {{
+export const Insertsurveydata = (db: D1Database, surveyId: string, ownerId: string, title: string, branding: string) => {{
     try {
-      return await db.prepare(
+      return db.prepare(
       'INSERT INTO surveys (id, owner_id, title, branding) VALUES (?, ?, ?, ?)',
-    ).bind(surveyId, ownerId, title, JSON.stringify(branding))
+    ).bind(surveyId, ownerId, title, branding)
 
     }catch(err)
     {
         console.error('Error in createSurvey:', err)
         throw new Error('Repositery error while creating survey'); // Rethrow the error to be handled by the caller
     }
+}
+}
+
+export const Insertquestiondata = async (db: D1Database, questionId: string, surveyId: string, type: string, label: string, options: any, sortOrder: number) => 
+{
+    return  db.prepare(
+        'INSERT INTO questions (id, survey_id, type, label, options, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
+      ).bind(
+        questionId, // New UUID for each question
+        surveyId, // Foreign Key link
+        type ,
+        label  ,
+        options  ,
+        sortOrder // sort_order
+      )
+}
+
+export const getsurveywithquestions = async (db: D1Database, surveyId: string) => {
+   return await db.prepare(`
+      SELECT 
+        s.*,
+        (
+          SELECT COUNT(*) 
+          FROM questions q 
+          WHERE q.survey_id = s.id
+        ) as questions_count,
+        (
+          SELECT COUNT(*) 
+          FROM responses r 
+          WHERE r.survey_id = s.id
+        ) as responses_count,
+        (
+          SELECT json_group_array(
+            json_object(
+              'id', q.id,
+              'type', q.type,
+              'label', q.label,
+              'options', q.options
+            )
+          )
+          FROM questions q
+          WHERE q.survey_id = s.id
+          ORDER BY q.sort_order ASC
+        ) as questions
+      FROM surveys s
+      WHERE s.owner_id = ?
+      ORDER BY s.created_at DESC
+    `)
+      .bind(user.id)
+      .all()
+}
+export const Createsurveywithquestions = async (db: D1Database, surveyId: string, ownerId: string, title: string, branding: any, questions: any[]) => {
+ try{
+  const surveyStmt = await Insertsurveydata(db, surveyId, ownerId, title, branding)
+
+  const questionStmts = questions.map((q, index) => {
+      return Insertquestiondata(db, crypto.randomUUID(), surveyId, q.type, q.label, q.options || [], index)
+  })
+
+  await db.batch([surveyStmt, ...questionStmts])
+ }
+  catch(err)  
+  {
+    console.error('Error in Createsurveywithquestions:', err)
+    throw new Error('Repositery error while creating survey with questions'); // Rethrow the error to be handled by the caller
+    
+  }
+
 }
