@@ -25,7 +25,7 @@ export const findsurveyresponses = async (db: D1Database, surveyId: string) => {
  }catch(err)
  {
     console.error('Error in findsurveyresponses:', err)
-    throw new Error('Repositery error while finding survey responses'); // Rethrow the error to be handled by the caller
+    throw new Error('Repository error while finding survey responses'); // Rethrow the error to be handled by the caller
  }
 }
 
@@ -44,8 +44,9 @@ export const Insertsurveydata = (db: D1Database, surveyId: string, ownerId: stri
 }
 }
 
-export const Insertquestiondata = async (db: D1Database, questionId: string, surveyId: string, type: string, label: string, options: any, sortOrder: number) => 
+export const Insertquestiondata =  (db: D1Database, questionId: string, surveyId: string, type: string, label: string, options: string [], sortOrder: number) => 
 {
+ 
     return  db.prepare(
         'INSERT INTO questions (id, survey_id, type, label, options, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
       ).bind(
@@ -53,12 +54,12 @@ export const Insertquestiondata = async (db: D1Database, questionId: string, sur
         surveyId, // Foreign Key link
         type ,
         label  ,
-        options  ,
+        JSON.stringify(options ?? []),
         sortOrder // sort_order
       )
 }
 
-export const getsurveywithquestions = async (db: D1Database, surveyId: string) => {
+export const getsurveywithquestions = async (db: D1Database, UserId: string) => {
    return await db.prepare(`
       SELECT 
         s.*,
@@ -89,12 +90,13 @@ export const getsurveywithquestions = async (db: D1Database, surveyId: string) =
       WHERE s.owner_id = ?
       ORDER BY s.created_at DESC
     `)
-      .bind(user.id)
+      .bind(UserId)
       .all()
 }
 export const Createsurveywithquestions = async (db: D1Database, surveyId: string, ownerId: string, title: string, branding: any, questions: any[]) => {
  try{
-  const surveyStmt = await Insertsurveydata(db, surveyId, ownerId, title, branding)
+
+  const surveyStmt =  Insertsurveydata(db, surveyId, ownerId, title, branding)
 
   const questionStmts = questions.map((q, index) => {
       return Insertquestiondata(db, crypto.randomUUID(), surveyId, q.type, q.label, q.options || [], index)
@@ -105,8 +107,21 @@ export const Createsurveywithquestions = async (db: D1Database, surveyId: string
   catch(err)  
   {
     console.error('Error in Createsurveywithquestions:', err)
-    throw new Error('Repositery error while creating survey with questions'); // Rethrow the error to be handled by the caller
+    // throw new Error('Repository error while creating survey with questions'); // Rethrow the error to be handled by the caller
     
   }
 
+}
+
+
+export const Deleteallsurvey =  (db: D1Database,  ownerId: string) => {
+  try 
+  {
+    return db.prepare('DELETE FROM surveys WHERE owner_id = ?')
+    .bind(ownerId)
+    .run()
+  } catch (err) {
+    console.error('Error in Deleteallsurvey:', err)
+    throw new Error('Repository error while deleting survey'); // Rethrow the error to be handled by the caller
+  }
 }

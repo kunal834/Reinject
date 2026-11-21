@@ -10,7 +10,7 @@ type Env = {
     }
 }
 export const getpublicSurvey = async (c: Context<Env>) => {
-  const surveyId = c.req.param('id')
+  const surveyId = c.req.param('id')  
   console.log('Received request for survey form layout with ID:', surveyId) 
 
   try {
@@ -21,7 +21,7 @@ export const getpublicSurvey = async (c: Context<Env>) => {
     }
 
     // Fetch related layout question entries
-    const results = await findquestionsbysurveyid(c, surveyId)
+    const results = await findquestionsbysurveyid(c.env.DB, surveyId)
 
     console.log('Fetched questions for survey form layout:', results) // Debugging line to check the fetched questions
     // Format serialized string entries back to JSON elements
@@ -39,6 +39,7 @@ export const getpublicSurvey = async (c: Context<Env>) => {
       },
     })
   } catch (error) {
+    console.error('Error fetching survey form layout:', error)
     return c.json({ success: false, error: 'Server data transaction failure.' }, 500)
   }
 }

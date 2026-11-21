@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { authMiddleware } from '../middleware/auth' // Ensure this extracts user from JWT
-import {responses, surveylist , createSurvey } from '../handlers/survey.handler'
+import {responses, surveylist , createSurvey , deleteSurvey , deleteallsurveys} from '../handlers/survey.handler'
 
 import  type { logininput} from '../validators/validator'
 
@@ -50,5 +50,10 @@ dashboard.post('/build', createSurvey) // Route to create a new survey
 // querying all the questions from surveys from questions table
 dashboard.get('/list', surveylist)
 
+// Delete all surveys for the authenticated user. This must be before /:id
+// so "deleteall" is not interpreted as a survey ID.
+dashboard.delete('/deleteall', deleteallsurveys)
 
+// Delete one survey and all its associated data.
+dashboard.delete('/:id', deleteSurvey)
 export default dashboard
