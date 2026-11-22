@@ -1,13 +1,14 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8787'
 
 interface AppContextType {
   user: { id: string; email: string } | null
   surveys: any[]
   isAuthenticated: boolean
   isLoading: boolean
-  login: (email: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
+  signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
   fetchSurveys: () => Promise<void>
   createSurvey: (data: { title: string; questions: any[]; branding: any }) => Promise<any>
@@ -41,19 +42,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // 2. Authentication Logic
-  const login = async (email: string) => {
+  const login = async (email: string, password: string) => {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, password }),
       credentials: 'include',
     })
 
-    const data = await response.json()
+    const data = await response.json().catch(() => ({
+      success: false,
+      error: 'Could not reach the authentication service.',
+    }))
     if (data.success) {
       setUser(data.user)
     } else {
-      throw new Error(data.error)
+      throw new Error(data.error || 'Sign in failed.')
+    }
+  }
+
+  const signup = async (name: string, email: string, password: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+      credentials: 'include',
+    })
+
+    const data = await response.json().catch(() => ({
+      success: false,
+      error: 'Could not reach the authentication service.',
+    }))
+    if (data.success) {
+      setUser(data.signupUser)
+    } else {
+      throw new Error(data.error || 'Account creation failed.')
     }
   }
 
@@ -94,6 +117,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user, // to prevent compilation errors
         isLoading,
         login,
+        signup,
         logout,
         fetchSurveys,
         createSurvey,

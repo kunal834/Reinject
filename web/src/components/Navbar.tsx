@@ -16,105 +16,53 @@ export function Navbar() {
   }
 
   return (
-    // Replaced muddy voxel background with a premium, blurred dark navigation shell
-    <header className="sticky top-0 z-50 w-full border-b border-slate-900 bg-[#070913]/80 backdrop-blur-md select-none font-['Share_Tech_Mono',_monospace]">
-      {/* Micro Glow Accent line under the navbar boundary */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff007f]/40 to-transparent" />
-
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Original Branding Token (Kept exactly identical to preserve identity) */}
-        <Link to="/" className="flex items-center transition hover:opacity-95">
-          <div className="inline-flex border-4 border-black text-black font-black text-lg sm:text-xl tracking-tight bg-black">
-            {/* DO */}
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#ffaa00] border-r-2 border-black">
-              D
-            </span>
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#ffaa00] border-r-4 border-black">
-              O
-            </span>
-            {/* CO */}
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#3b82f6] border-r-2 border-black">
-              C
-            </span>
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#3b82f6] border-r-4 border-black">
-              O
-            </span>
-            {/* DE */}
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#f43f5e] border-r-2 border-black">
-              D
-            </span>
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#f43f5e] border-r-4 border-black">
-              E
-            </span>
-            {/* GO */}
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#10b981] border-r-2 border-black">
-              G
-            </span>
-            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-[#10b981]">
-              O
-            </span>
-          </div>
+    <header className="sticky top-0 z-50 border-b border-[#e7e4dc] bg-[#faf9f6]/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
+        <Link to="/" className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-[#ed6a43] text-white shadow-[0_5px_14px_rgba(237,106,67,.25)]">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12h16M12 4v16" />
+              <path d="m8 8 8 8M16 8l-8 8" opacity=".38" />
+            </svg>
+          </span>
+          <span className="text-[20px] font-[800] tracking-[-0.04em]">Reinject</span>
         </Link>
 
-        {/* Navigation Actions Grid with Synthwave Styling */}
-        <nav className="flex items-center gap-2 sm:gap-4 text-xs font-bold uppercase tracking-wider">
+        <nav className="flex items-center gap-1 text-sm font-semibold">
           <Link
             to="/"
-            className="px-3 py-1.5 text-slate-400 transition hover:text-slate-200"
-            activeProps={{
-              className:
-                '!text-[#00f5ff] bg-slate-950 border border-slate-800 shadow-[0_0_10px_rgba(0,245,255,0.1)]',
-            }}
+            className="hidden rounded-lg px-3 py-2 text-[#686767] transition hover:text-[#191919] sm:block"
+            activeProps={{ className: '!text-[#191919]' }}
           >
-            Home
+            Product
           </Link>
-
-          {/* Render Dashboard anchor dynamically only to logged-in operators */}
           {isAuthenticated && (
             <Link
               to="/dashboard"
-              className="px-3 py-1.5 text-slate-400 transition hover:text-slate-200"
-              activeProps={{
-                className:
-                  '!text-[#00f5ff] bg-slate-950 border border-slate-800 shadow-[0_0_10px_rgba(0,245,255,0.1)]',
-              }}
+              className="rounded-lg px-3 py-2 text-[#686767] transition hover:text-[#191919]"
+              activeProps={{ className: '!text-[#191919]' }}
             >
               Dashboard
             </Link>
           )}
-
-          {/* Elegant geometric splitter element */}
-          <div className="h-4 w-[1px] bg-slate-800 mx-1" />
-
-          {/* DYNAMIC AUTHENTICATION INTERCEPT FORK */}
           {isLoading ? (
-            <span className="text-[10px] tracking-widest text-[#ff007f] animate-pulse px-4">
-              // SYNCING_NODE
-            </span>
+            <span className="ml-2 h-9 w-20 animate-pulse rounded-lg bg-[#edeae3]" />
           ) : isAuthenticated ? (
             <div className="flex items-center gap-3">
-              {/* Active Profile ID Block */}
-              {user?.email && (
-                <span className="hidden md:inline text-[10px] text-[#00f5ff] bg-[#00f5ff]/5 border border-[#00f5ff]/20 px-2 py-1 tracking-widest">
-                  SYS_OP: {user.email.split('@')[0]}
-                </span>
-              )}
-
-              {/* Crimson Tech Style Logout Dispatcher */}
+              {user?.email && <span className="hidden text-xs text-[#85827b] md:inline">{user.email}</span>}
               <button
                 onClick={handleLogoutClick}
-                className="relative overflow-hidden rounded-md border border-[#ff007f] bg-[#ff007f]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#ff007f] shadow-[0_0_15px_rgba(255,0,127,0.1)] transition-all hover:bg-[#ff007f] hover:text-white cursor-pointer active:scale-95 animate-none"
+                className="rounded-lg border border-[#dedbd2] px-3.5 py-2 text-sm text-[#4d4b47] transition hover:bg-white cursor-pointer"
               >
-                Logout
+                Sign out
               </button>
             </div>
           ) : (
-            // Sleek Chrome/Steel Link for Guest Authorization Injection
             <Link
               to="/auth/login"
-              className="rounded-md border border-slate-800 bg-slate-950 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-slate-300 transition-all hover:bg-slate-900 hover:border-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
+              className="ml-2 rounded-lg bg-[#191919] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(25,25,25,.12)] transition hover:-translate-y-0.5 hover:bg-[#30302e]"
             >
-              Sign In
+              Get started
             </Link>
           )}
         </nav>

@@ -4,7 +4,7 @@ import { Navbar } from '../components/Navbar'
 
 export const Route = createRootRoute({
   component: () => (
-    <div className="flex min-h-screen flex-col bg-[#0b0f19] text-slate-100 font-sans antialiased">
+    <div className="flex min-h-screen flex-col bg-[#faf9f6] text-[#191919] antialiased">
       {/* Persistent global header navbar */}
       <Navbar />
 

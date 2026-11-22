@@ -10,10 +10,10 @@ export const Route = createFileRoute('/dashboard')({
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787'
 
 const PRESET_THEMES = [
-  { name: '🌌 Neon Cyan', bg: '#070913', pane: '#121626', accent: '#00f5ff', text: '#00f5ff' },
-  { name: '🔮 Laser Magenta', bg: '#0b0514', pane: '#180c24', accent: '#ff007f', text: '#ff007f' },
-  { name: '🪐 Orchid Violet', bg: '#06030c', pane: '#110a1c', accent: '#9d4edd', text: '#9d4edd' },
-  { name: '🐦 Obsidian Slate', bg: '#020408', pane: '#0b0f17', accent: '#475569', text: '#e2e8f0' },
+  { name: 'Sand', bg: '#faf9f6', pane: '#ffffff', accent: '#ed6a43', text: '#191919' },
+  { name: 'Stone', bg: '#f3f1eb', pane: '#ffffff', accent: '#8b7d6b', text: '#3d3b37' },
+  { name: 'Rose', bg: '#fbf7f5', pane: '#ffffff', accent: '#c95f45', text: '#4a3934' },
+  { name: 'Slate', bg: '#f4f6f5', pane: '#ffffff', accent: '#60736d', text: '#303934' },
 ]
 
 export const CLIENT_BG_MAP: Record<string, string> = {
@@ -154,20 +154,21 @@ function DashboardComponent() {
   return (
     <div
       style={{ backgroundColor: activeTheme.bg }}
-      className="relative min-h-screen text-[#e2e8f0] font-['Share_Tech_Mono',_monospace] antialiased p-6 sm:p-8 transition-colors duration-300"
+      className="relative min-h-screen text-[#191919] antialiased p-5 sm:p-8 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Block Container */}
         <div
           style={{ backgroundColor: activeTheme.pane }}
-          className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border border-slate-800 p-6 rounded-none"
+          className="flex flex-col gap-6 rounded-[14px] border border-[#e2ded4] p-6 sm:flex-row sm:items-center sm:justify-between shadow-sm"
         >
           <div>
-            <span className="inline-block rounded-none border border-[#ff007f]/40 bg-[#ff007f]/5 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[#ff007f] mb-2">
-              ✨ CORE_WORKSPACE_ACTIVE
+            <span className="mb-2 inline-flex items-center gap-2 text-xs font-bold text-[#ed6a43]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ed6a43]" />
+              Workspace
             </span>
-            <h1 className="text-4xl font-black uppercase text-white font-['VT323',_monospace]">
-              CONSOLE_OPERATIONS_DESK
+            <h1 className="text-3xl font-[800] tracking-[-0.045em] text-[#191919]">
+              Good morning
             </h1>
 
             <div className="mt-4 flex flex-wrap items-center gap-2 bg-black/40 p-2 border border-slate-800 max-w-xl rounded-md">
@@ -191,11 +192,11 @@ function DashboardComponent() {
             <button
               type="button"
               onClick={() => setViewMode(viewMode === 'list' ? 'create' : 'list')}
-              className={`w-full sm:w-auto text-center rounded-none border-4 border-b-8 border-black px-6 py-3 text-xs font-black uppercase tracking-widest transition-all active:border-b-4 active:translate-y-1 cursor-pointer ${
-                viewMode === 'list' ? 'bg-[#39ff14] text-black' : 'bg-[#ffaa00] text-black'
+              className={`w-full sm:w-auto rounded-[9px] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 cursor-pointer ${
+                viewMode === 'list' ? 'bg-[#191919] shadow-[0_7px_18px_rgba(25,25,25,.12)]' : 'bg-[#ed6a43]'
               }`}
             >
-              {viewMode === 'list' ? '➕ CREATE_NEW_SURVEY' : '📋 VIEW_ACTIVE_SCHEMA'}
+              {viewMode === 'list' ? 'Create survey' : 'Back to surveys'}
             </button>
           </div>
         </div>
@@ -205,9 +206,9 @@ function DashboardComponent() {
             <div className="xl:col-span-2 space-y-4">
               <h2
                 style={{ color: activeTheme.text }}
-                className="text-2xl font-black uppercase tracking-widest font-['VT323',_monospace]"
+                className="text-xl font-[800] tracking-[-0.03em]"
               >
-                ACTIVE_SURVEY_NODES ({surveys.length})
+                Your surveys ({surveys.length})
               </h2>
 
               {surveys.length === 0 ? (
@@ -225,10 +226,10 @@ function DashboardComponent() {
                     <div
                       key={survey.id}
                       style={{ backgroundColor: activeTheme.pane }}
-                      className={`border-4 p-5 transition-all ${
+                      className={`rounded-[12px] border p-5 transition-all ${
                         selectedSurveyId === survey.id
-                          ? 'border-[#00f5ff] border-b-8 shadow-[4px_4px_0px_0px_#008b94]'
-                          : 'border-black border-b-8'
+                          ? 'border-[#ed6a43] ring-2 ring-[#ed6a43]/10'
+                          : 'border-[#e4e0d6] hover:border-[#cbc6ba]'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -262,7 +263,7 @@ function DashboardComponent() {
                             onClick={() => handleCopyLink(survey.id)}
                             className={`border-2 border-b-4 border-black px-3 py-1.5 text-[11px] font-black uppercase ${copiedId === survey.id ? 'bg-[#39ff14] text-black' : 'bg-slate-950 text-[#00f5ff] border-slate-800'}`}
                           >
-                            {copiedId === survey.id ? '✅ COPIED' : '🔗 SYNC_URL'}
+                            {copiedId === survey.id ? 'Copied' : 'Copy link'}
                           </button>
                           <button
                             type="button"
@@ -271,7 +272,7 @@ function DashboardComponent() {
                             }
                             className={`border-2 border-b-4 border-black px-3 py-1.5 text-[11px] font-black uppercase ${selectedSurveyId === survey.id ? 'bg-[#ff007f] text-white' : 'bg-[#ffaa00] text-black'}`}
                           >
-                            {selectedSurveyId === survey.id ? '📉 CLOSE' : '📊 INSPECT'}
+                            {selectedSurveyId === survey.id ? 'Close' : 'Inspect'}
                           </button>
                         </div>
                       </div>

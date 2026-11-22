@@ -15,31 +15,31 @@ interface SurveyBuilderProps {
 const BG_STYLE_PRESETS = [
   {
     id: 'dirt',
-    name: '🌌 Neon Cyan Matrix',
+    name: 'Soft Sand',
     hex: '#111625',
     desc: 'Deep cyberspace baseline node',
   },
   {
     id: 'netherrack',
-    name: '🔮 Laser Magenta Layer',
+    name: 'Warm Clay',
     hex: '#210b14',
     desc: 'Reflective ultra-bright core color',
   },
   {
     id: 'endstone',
-    name: '🪐 Orchid Violet Grid',
+    name: 'Rosewood',
     hex: '#150a21',
     desc: 'Eerie high-contrast premium workspace',
   },
   {
     id: 'deepslate',
-    name: '🐦 Obsidian Slate Hull',
+    name: 'Slate Green',
     hex: '#0f172a',
     desc: 'Industrial dark telemetry console',
   },
   {
     id: 'obsidian',
-    name: '🕶️ Pure Pitch Void',
+    name: 'Deep Ink',
     hex: '#070510',
     desc: 'Absolute zero light baseline absorption',
   },
@@ -49,7 +49,7 @@ export function SurveyBuilder({ onCreateSuccess }: SurveyBuilderProps) {
   const { createSurvey } = useApp()
 
   const [surveyTitle, setSurveyTitle] = useState('')
-  const [primaryColor, setPrimaryColor] = useState('#ff007f')
+  const [primaryColor, setPrimaryColor] = useState('#ed6a43')
   const [logoUrl, setLogoUrl] = useState('')
 
   const [bgType, setBgType] = useState<'preset' | 'custom'>('preset')
@@ -62,7 +62,7 @@ export function SurveyBuilder({ onCreateSuccess }: SurveyBuilderProps) {
 
   useEffect(() => {
     setLocalLiveMock({
-      title: surveyTitle.trim() || 'UNTITLED SURVEY',
+      title: surveyTitle.trim() || 'Untitled survey',
       primaryColor,
       logoUrl,
       bgType,
@@ -528,7 +528,7 @@ export function SurveyBuilder({ onCreateSuccess }: SurveyBuilderProps) {
           disabled={isSubmitting}
           className="w-full text-center border-4 border-b-8 border-black bg-[#39ff14] py-3.5 text-xs font-black uppercase tracking-widest text-black transition-all hover:bg-[#2acc10] active:border-b-4 active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
         >
-          {isSubmitting ? 'PUBLISHING_METRIC_NODES...' : '🚀 COMPILE & LAUNCH PUBLIC SURVEY'}
+          {isSubmitting ? 'Publishing...' : 'Publish survey'}
         </button>
       </div>
     </form>

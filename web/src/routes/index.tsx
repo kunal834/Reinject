@@ -6,158 +6,119 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   return (
-    // Base application container - Rich Dark Slate with smooth font bindings
-    <div className="relative min-h-screen bg-[#070913] text-[#e2e8f0] font-['Share_Tech_Mono',_monospace] selection:bg-[#ff007f] selection:text-white antialiased overflow-x-hidden">
-      {/* Premium Linear Light bar accent running along the very top edge */}
-      <div className="h-2 w-full bg-gradient-to-r from-[#00f5ff] via-[#ff007f] to-[#7b2cbf] shadow-[0_3px_15px_rgba(255,0,127,0.4)]" />
+    <div className="overflow-hidden bg-[#faf9f6]">
+      <section className="relative mx-auto max-w-7xl px-5 pb-16 pt-20 sm:pt-24 lg:px-8 lg:pb-24 lg:pt-28">
+        <div className="pointer-events-none absolute right-[-8rem] top-[-10rem] h-[34rem] w-[34rem] rounded-full bg-[#f1b29f]/20 blur-[100px]" />
+        <div className="relative mx-auto max-w-4xl text-center">
+          <div className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-[#dfdcd3] bg-white px-3 py-1.5 text-xs font-bold text-[#66645f] shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#ed6a43]" />
+            Customer insight, without the drag
+          </div>
+          <h1 className="text-[44px] font-[800] leading-[1.02] tracking-[-0.055em] text-[#191919] sm:text-[64px] lg:text-[78px]">
+            Ask better questions.
+            <br />
+            <span className="text-[#ed6a43]">Build what matters.</span>
+          </h1>
+          <p className="mx-auto mt-7 max-w-[650px] text-lg leading-8 text-[#6d6a64] sm:text-xl">
+            Reinject turns customer responses into clear, actionable insight—so every team can ship with confidence.
+          </p>
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              to="/auth/login"
+              className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#191919] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_24px_rgba(25,25,25,.14)] transition hover:-translate-y-0.5 sm:w-auto"
+            >
+              Start for free
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </Link>
+            <a
+              href="#features"
+              className="flex w-full items-center justify-center rounded-[10px] border border-[#dedbd2] bg-white px-5 py-3.5 text-sm font-bold text-[#3e3d39] transition hover:border-[#c9c5ba] sm:w-auto"
+            >
+              See how it works
+            </a>
+          </div>
+        </div>
 
-      {/* Cybernetic Grid Overlay Mesh */}
-      <div
-        className="absolute inset-0 -z-10 opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-          backgroundSize: '32px 32px',
-        }}
-      />
-
-      {/* Subtle background ambient mesh glow */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#ff007f]/5 blur-[120px] rounded-full pointer-events-none -z-10" />
-
-      {/* Hero Interactive Area */}
-      <section className="mx-auto max-w-7xl px-6 pt-24 pb-20 text-center lg:px-8 lg:pt-32">
-        {/* Legendary Rarity Tooltip Badge - Outlined with a glowing magenta neon shadow */}
-        <span className="inline-block rounded-none border-4 border-black bg-[#0d091a] px-5 py-1.5 text-xl uppercase tracking-widest text-[#ff007f] font-['VT323',_monospace] shadow-[0_0_20px_rgba(255,0,127,0.25)] border-t-[#ff007f] border-l-[#ff007f]">
-          ✨ LEVEL 100: PERSONAL BRANDING ENGINE ✨
-        </span>
-
-        {/* Title text using an ultra-premium dual linear gradient flow */}
-        <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black uppercase tracking-wide text-[#ffffff] sm:text-7xl lg:text-8xl lg:leading-[0.9] font-['VT323',_monospace] [text-shadow:4px_4px_0px_#000000]">
-          Build Beautiful, Fully <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f5ff] via-[#ff007f] to-[#9d4edd] drop-shadow-[0_2px_8px_rgba(0,245,255,0.2)]">
-            Branded Surveys
-          </span>
-        </h1>
-
-        {/* Body Descriptive block with clean high-contrast gray profiles */}
-        <p className="mx-auto mt-8 max-w-2xl text-lg font-bold tracking-normal leading-7 text-slate-400 [text-shadow:1px_1px_0px_#000000]">
-          Compose interactive queries, orchestrate logic trees, and customize standard visual forms
-          with custom brand schemas. Secure fast, structured responses seamlessly.
-        </p>
-
-        {/* 3D Action Buttons mapped cleanly to Neon Cyan and Deep Orchid Purple */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 font-['Share_Tech_Mono',_monospace]">
-          <Link
-            to="/auth/login"
-            className="w-full sm:w-auto text-center rounded-none border-4 border-b-8 border-black bg-[#00f5ff] px-8 py-3.5 text-base font-black uppercase tracking-wider text-black transition-all hover:bg-[#00d4dd] active:border-b-4 active:translate-y-1"
-          >
-            Create a Survey
-          </Link>
-          <a
-            href="#features"
-            className="w-full sm:w-auto text-center rounded-none border-4 border-b-8 border-black bg-[#7b2cbf] px-8 py-3.5 text-base font-black uppercase tracking-wider text-white transition-all hover:bg-[#62219c] active:border-b-4 active:translate-y-1"
-          >
-            Explore Features
-          </a>
+        <div className="relative mx-auto mt-16 max-w-5xl">
+          <div className="absolute inset-x-[12%] bottom-[-18px] h-16 rounded-[24px] bg-[#ed6a43]/10 blur-2xl" />
+          <div className="relative rounded-[18px] border border-[#dedbd2] bg-[#eeece6] p-2 shadow-[0_24px_70px_rgba(51,47,37,.10)] sm:p-3">
+            <div className="overflow-hidden rounded-[12px] border border-[#d9d5cb] bg-white">
+              <div className="flex h-11 items-center border-b border-[#ebe8e0] px-4">
+                <div className="flex gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#d9d5cb]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#d9d5cb]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#d9d5cb]" />
+                </div>
+                <div className="mx-auto mr-[38px] h-6 w-44 rounded-md bg-[#f5f3ed]" />
+              </div>
+              <div className="grid min-h-[390px] grid-cols-[185px_1fr] sm:grid-cols-[220px_1fr]">
+                <aside className="hidden border-r border-[#ebe8e0] p-5 sm:block">
+                  <div className="mb-6 flex items-center gap-2">
+                    <span className="h-7 w-7 rounded-lg bg-[#ed6a43]" />
+                    <span className="h-2.5 w-20 rounded bg-[#ddd9cf]" />
+                  </div>
+                  {['Overview', 'Surveys', 'Responses', 'Audience'].map((item, index) => (
+                    <div key={item} className={`mb-2 flex h-9 items-center gap-2 rounded-lg px-2 ${index === 1 ? 'bg-[#f2eee8]' : ''}`}>
+                      <span className={`h-3.5 w-3.5 rounded-[4px] ${index === 1 ? 'bg-[#ed6a43]' : 'border border-[#cfcbbf]'}`} />
+                      <span className="h-2 w-16 rounded bg-[#d7d3c8]" />
+                    </div>
+                  ))}
+                </aside>
+                <div className="p-5 sm:p-8">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="h-3 w-24 rounded bg-[#dcd8ce]" />
+                      <div className="mt-3 h-7 w-52 rounded-md bg-[#292927]" />
+                    </div>
+                    <div className="h-9 w-28 rounded-lg bg-[#191919]" />
+                  </div>
+                  <div className="mt-8 grid grid-cols-3 gap-3">
+                    {[
+                      ['Responses', '1,284', '+18%'],
+                      ['Completion', '86%', '+4%'],
+                      ['Avg. score', '8.4', '+0.6'],
+                    ].map(([label, value, delta]) => (
+                      <div key={label} className="rounded-xl border border-[#ebe8e0] p-3 sm:p-5">
+                        <div className="text-[9px] font-bold text-[#9a978f] sm:text-xs">{label}</div>
+                        <div className="mt-2 text-xl font-[800] tracking-tight sm:text-3xl">{value}</div>
+                        <div className="mt-2 text-[9px] font-bold text-[#4b8270] sm:text-xs">{delta}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 grid grid-cols-[1.4fr_.6fr] gap-3">
+                    <div className="h-36 rounded-xl border border-[#ebe8e0] p-4 sm:h-44">
+                      <div className="h-2.5 w-24 rounded bg-[#dcd8ce]" />
+                      <div className="mt-7 flex h-24 items-end gap-2 border-b border-[#eeeae2]">
+                        {[35, 58, 44, 72, 64, 82, 76, 92, 70, 88, 80, 96].map((height, i) => (
+                          <div key={i} className="flex-1 rounded-t-sm bg-[#ed6a43]/70" style={{ height: `${height}%` }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="h-36 rounded-xl border border-[#ebe8e0] p-4 sm:h-44">
+                      <div className="h-2.5 w-16 rounded bg-[#dcd8ce]" />
+                      <div className="mx-auto mt-5 h-20 w-20 rounded-full border-[12px] border-[#ed6a43] border-r-[#efede7] sm:h-28 sm:w-28" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Feature Section Layer - Styled atop a solid deep velvet charcoal matrix */}
-      <section
-        id="features"
-        className="mx-auto max-w-7xl px-6 py-20 border-t-4 border-black bg-[#0a0c16]"
-      >
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-4xl font-black uppercase tracking-widest text-[#ffff55] font-['VT323',_monospace] [text-shadow:2px_2px_0px_#000000] sm:text-5xl">
-            Engineered for Complete Ownership
-          </h2>
-          <p className="mt-2 text-base tracking-wide text-slate-400">
-            Everything you need to compile, configure, and analyze surveys under your own visual
-            umbrella.
-          </p>
-        </div>
-
-        {/* Dynamic Matrix Blocks Grid utilizing premium color trim accents */}
-        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 text-left">
-          {/* Card 1 - Neon Cyan Terminal Block */}
-          <div className="rounded-none border-4 border-b-8 border-black bg-[#121626] p-8 transition-transform hover:-translate-y-1 border-t-4 border-t-[#00f5ff]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-none border-4 border-black bg-[#00f5ff] text-black shadow-[4px_4px_0px_0px_#008b94]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                  d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
-                />
-              </svg>
+      <section id="features" className="border-y border-[#e7e4dc] bg-[#f5f3ed]">
+        <div className="mx-auto grid max-w-7xl gap-px px-5 py-16 sm:grid-cols-3 lg:px-8">
+          {[
+            ['01', 'Build in minutes', 'Create flexible surveys with text, choice, and rating questions—no engineering required.'],
+            ['02', 'Make it yours', 'Add your brand, palette, and logo to give every touchpoint a consistent identity.'],
+            ['03', 'Act on responses', 'Track submissions and inspect the signal that matters, all from one clean workspace.'],
+          ].map(([number, title, copy]) => (
+            <div key={number} className="border-b border-[#ddd9cf] py-8 sm:border-b-0 sm:border-r sm:px-8 first:sm:pl-0 last:sm:border-r-0 last:sm:pr-0">
+              <div className="mb-8 flex h-9 w-9 items-center justify-center rounded-full bg-[#ed6a43]/10 text-xs font-[800] text-[#ed6a43]">{number}</div>
+              <h2 className="text-xl font-[800] tracking-[-0.035em]">{title}</h2>
+              <p className="mt-3 max-w-sm leading-7 text-[#746f66]">{copy}</p>
             </div>
-            <h3 className="mt-6 text-2xl font-bold uppercase tracking-wide text-[#00f5ff] font-['VT323',_monospace]">
-              Visual Layout Builder
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Compose short text, structural multiple choice, or linear numerical rating blocks
-              dynamically.
-            </p>
-          </div>
-
-          {/* Card 2 - Neon Magenta/Hot-Pink Terminal Block */}
-          <div className="rounded-none border-4 border-b-8 border-black bg-[#121626] p-8 transition-transform hover:-translate-y-1 border-t-4 border-t-[#ff007f]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-none border-4 border-black bg-[#ff007f] text-white shadow-[4px_4px_0px_0px_#a3004f]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                  d="M9.53 16.122a3 3 0 0 0-3.03 0m3.03 0a3 3 0 0 1 3.03 0m-3.03 0-6.109 4.132A1.25 1.25 0 0 1 1.5 19.34V4.66a1.25 1.25 0 0 1 1.921-1.071l6.109 4.132a3 3 0 0 1 6.109 0l6.109-4.132A1.25 1.25 0 0 1 22.5 4.66v14.68a1.25 1.25 0 0 1-1.921 1.071l-6.109-4.132a3 3 0 0 0-3.03 0m0 0a3 3 0 0 1-3.03 0"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-6 text-2xl font-bold uppercase tracking-wide text-[#ff007f] font-['VT323',_monospace]">
-              Custom Brand Tokens
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Inject custom color definitions and structural logos directly into individual survey
-              viewports.
-            </p>
-          </div>
-
-          {/* Card 3 - Vibrant Purple/Violet Terminal Block */}
-          <div className="rounded-none border-4 border-b-8 border-black bg-[#121626] p-8 transition-transform hover:-translate-y-1 col-span-1 sm:col-span-2 lg:col-span-1 border-t-4 border-t-[#9d4edd]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-none border-4 border-black bg-[#9d4edd] text-white shadow-[4px_4px_0px_0px_#5a189a]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                  d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-1.5 0H6.002m0 0a.75.75 0 1 0 0 1.5h12a.75.75 0 1 0 0-1.5h-12Zm0 0v3m12-3v3m-3.75-9H12v3h2.25v-3Zm0 0H16.5V6h-2.25v1.5Zm-5.25 0h2.25V6H9v1.5Z"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-6 text-2xl font-bold uppercase tracking-wide text-[#9d4edd] font-['VT323',_monospace]">
-              Telemetry Analytics
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Persist anonymous responses securely to database nodes and view live performance
-              metrics on your dashboard.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
     </div>

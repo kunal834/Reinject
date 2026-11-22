@@ -13,9 +13,11 @@ app.use(
     origin: (origin) => {
       const allowedOrigins = [
         'http://localhost:5173',
-        'https://formflow-app.pages.dev', // Frontend URL
+        'https://formflow-app.pages.dev',
       ]
-      return allowedOrigins.includes(origin) ? origin : allowedOrigins[1]
+      if (allowedOrigins.includes(origin)) return origin
+      if (origin.endsWith('.pages.dev')) return origin
+      return null
     },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

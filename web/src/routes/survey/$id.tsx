@@ -18,7 +18,7 @@ function PublicSurveyComponent() {
   const [formAnswers, setFormAnswers] = useState<Record<string, any>>({})
 
   // Theme Fallback States
-  const [brandColor, setBrandColor] = useState('#ff007f')
+  const [brandColor, setBrandColor] = useState('#ed6a43')
   const [brandLogo, setBrandLogo] = useState('')
   const [brandingBgType, setBrandingBgType] = useState<'preset' | 'custom'>('preset')
   const [brandingBgStyle, setBrandingBgStyle] = useState('dirt')
@@ -48,7 +48,7 @@ function PublicSurveyComponent() {
           }
 
           // 2. DYNAMIC STATE HYDRATION (No hardcoded fallback strings to block updates)
-          setBrandColor(parsedBranding.primaryColor)
+          setBrandColor(parsedBranding.primaryColor || '#ed6a43')
           setBrandLogo(parsedBranding.logoUrl || '')
           setBrandingBgType(parsedBranding.bgType || 'preset')
           setBrandingBgStyle(parsedBranding.bgStyle)
@@ -125,7 +125,7 @@ function PublicSurveyComponent() {
   return (
     <div
       style={{ backgroundColor: `${resolveViewportBackground()}` }}
-      className="relative min-h-screen font-['Share_Tech_Mono',_monospace] selection:bg-[#ff007f] selection:text-white antialiased flex flex-col items-center justify-start px-4 py-16 transition-colors duration-300"
+      className="relative min-h-screen antialiased flex flex-col items-center justify-start px-4 py-16 transition-colors duration-300"
     >
       {/* Cybernetic Grid Pattern Overlay matching your app skin */}
       <div
@@ -141,7 +141,7 @@ function PublicSurveyComponent() {
         {/* State: Loading */}
         {isLoading && (
           <div className="py-20 text-center text-[#ff007f] font-black uppercase tracking-widest text-sm animate-pulse">
-            // SYNCING_EXTERNAL_FORM_NODES...
+            Loading survey...
           </div>
         )}
 
@@ -157,11 +157,11 @@ function PublicSurveyComponent() {
           <div className="py-12 text-center space-y-4 border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm">
             <span className="text-5xl block animate-bounce">✨</span>
             <div>
-              <h1 className="text-3xl font-black uppercase tracking-wide text-slate-950 font-['VT323',_monospace]">
-                SUBMISSION_SUCCESSFUL
+              <h1 className="text-3xl font-[800] tracking-[-0.04em] text-slate-950">
+                Thank you
               </h1>
               <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">
-                Your data response payload has been written safely to the live record ledger.
+                Your response was recorded successfully.
               </p>
             </div>
           </div>
@@ -181,7 +181,7 @@ function PublicSurveyComponent() {
                   }}
                   className="inline-block rounded-sm border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest mb-2"
                 >
-                  📝 ACTIVE_DOCUMENT_FEED
+                  Reinject survey
                 </span>
                 <h1 className="text-2xl font-black uppercase tracking-wide text-slate-950 font-['Share_Tech_Mono',_monospace]">
                   {surveyData.title}
@@ -305,7 +305,7 @@ function PublicSurveyComponent() {
                 style={{ backgroundColor: brandColor }}
                 className="w-full text-center rounded-md px-8 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-40 cursor-pointer shadow-md"
               >
-                {isSubmitting ? 'TRANSMITTING_PAYLOAD...' : '🚀 SUBMIT_MY_RESPONSES'}
+                {isSubmitting ? 'Submitting...' : 'Submit response'}
               </button>
             </form>
           </div>
