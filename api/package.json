@@ -9,7 +9,7 @@
     "postinstall": "wrangler types",
     "typecheck": "tsc --noEmit",
     "migrate:create": "wrangler d1 migrations create DB",
-    "Preferences: Open User Settings": "wrangler d1 migrations apply DB --local",
+    "migrate:local": "wrangler d1 migrations apply DB --local",
     "migrate:prod": "wrangler d1 migrations apply DB --remote",
     "auth_test": "hurl --test --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",
     "auth_debug": "hurl --very-verbose --variables-file tests/hurl/env/local.env tests/hurl/auth_flow.hurl",

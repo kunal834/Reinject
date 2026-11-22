@@ -125,3 +125,17 @@ export const Deleteallsurvey =  (db: D1Database,  ownerId: string) => {
     throw new Error('Repository error while deleting survey'); // Rethrow the error to be handled by the caller
   }
 }
+
+
+export const FindsurveyTitle = async (db: D1Database, ownerId: string, title: string) => {
+  try {
+    return await db.prepare('SELECT id FROM surveys WHERE owner_id = ? AND title = ?')
+      .bind(ownerId, title)
+      .first()
+
+  }catch(err)
+  {
+    console.error('Error in FindsurveyTitle:', err)
+    throw new Error('Repository error while finding survey title'); // Rethrow the error to be handled by the caller
+  }
+}

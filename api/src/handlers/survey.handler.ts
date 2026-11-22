@@ -1,7 +1,7 @@
 import type { Context } from 'hono'
 import { surveySchema, responseOutputSchema } from '../validators/validator'
 import type { JWTPayload } from '../validators/validator'
-import {findsurveyresponses, getSurvey , Createsurveywithquestions ,getsurveywithquestions , Deleteallsurvey}  from '../db/survey.repo'
+import {findsurveyresponses, getSurvey , Createsurveywithquestions ,getsurveywithquestions , Deleteallsurvey , FindsurveyTitle}  from '../db/survey.repo'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
@@ -79,6 +79,11 @@ export const createSurvey = async (c: Context<Env>) => {
 
     
     // await c.env.DB.batch([surveyStmt, ...questionStmts])
+
+    const existingTitle = await FindsurveyTitle(c.env.DB, user.id, title)
+    if (existingTitle) {
+      return c.json({ success: false, error: 'Survey title already exists for this user.' }, 400)
+    }
 
     await Createsurveywithquestions(c.env.DB, surveyId, user.id, title, JSON.stringify(branding), questions)
 

@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 export const signupschema = z.object({
     name : z.string().min(1, 'Name is required.'),
-    email: z.string(),
+    email: z.string().email('Invalid email address.'),
     password: z.string().min(6, 'Password must be at least 6 characters long.')
 });
 
@@ -18,7 +18,7 @@ export type logininput = z.infer<typeof loginschema>;
 // Define a schema for payload validation 
 export const payloadschema = z.object({
     id: z.string(),
-    email: z.string().email(),
+    email: z.string(),
    // Optional claims so Zod won't panic if they are present or missing
   exp: z.number().optional(),
   iat: z.number().optional(),
