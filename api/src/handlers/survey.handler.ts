@@ -1,7 +1,7 @@
 import type { Context } from 'hono'
 import { surveySchema, responseOutputSchema } from '../validators/validator'
 import type { JWTPayload } from '../validators/validator'
-import {findsurveyresponses, getSurvey , Createsurveywithquestions ,getsurveywithquestions , Deleteallsurvey , FindsurveyTitle}  from '../db/survey.repo'
+import {findsurveyresponses, getSurvey , Createsurveywithquestions ,getsurveywithquestions , Deleteallsurvey , FindsurveyTitle , Deletesurveybyid}  from '../db/survey.repo'
 // Type definition for the environment variables used in the handler functions
 type Env = {
     Bindings: {
@@ -135,9 +135,7 @@ export const deleteSurvey = async (c: Context<Env>) => {
       return c.json({ success: false, error: 'Access denied or document missing.' }, 403)
     }
 
-      await c.env.DB.prepare('DELETE FROM surveys WHERE id = ? AND owner_id = ?')
-          .bind(surveyId, user.id)
-          .run()
+     await Deletesurveybyid(c.env.DB, surveyId, user.id)
         
           console.log(`Survey with ID ${surveyId} deleted successfully for user ${user.id}.`)
       return c.json({ success: true, message: 'Survey deleted successfully.' })

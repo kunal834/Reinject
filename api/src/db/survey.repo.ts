@@ -126,6 +126,18 @@ export const Deleteallsurvey =  (db: D1Database,  ownerId: string) => {
   }
 }
 
+export const Deletesurveybyid =  async (db: D1Database,  surveyId: string , userId: string) => {
+  try{
+    await db.prepare('DELETE FROM surveys WHERE id = ? AND owner_id = ?')
+          .bind(surveyId, userId)
+          .run()
+  }catch(err)
+  {
+    console.error('Error in Deletesurveybyid:', err)
+    throw new Error('Repository error while deleting survey by id'); // Rethrow the error to be handled by the caller
+  }
+
+}
 
 export const FindsurveyTitle = async (db: D1Database, ownerId: string, title: string) => {
   try {
